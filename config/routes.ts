@@ -29,6 +29,11 @@
     redirect: '/welcome',
   },
   {
+    path: '/poolManage',
+    name: 'pool manage',
+    component: './PoolManage',
+  },
+  {
     component: './404',
   },
 ];
