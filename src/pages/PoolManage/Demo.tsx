@@ -1,9 +1,8 @@
-import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button } from 'antd';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import request from 'umi-request';
+import ModalForm from './ModalForm';
 
 type GithubIssueItem = {
   url: string;
@@ -55,7 +54,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: 'option',
     valueType: 'option',
-    render: (text, record) => <a>detail</a>,
+    render: () => <a>detail</a>,
   },
 ];
 
@@ -100,11 +99,7 @@ export default () => {
         pageSize: 5,
       }}
       dateFormatter="string"
-      toolBarRender={() => [
-        <Button key="button" icon={<PlusOutlined />} type="primary">
-          Create pool
-        </Button>,
-      ]}
+      toolBarRender={() => [<ModalForm />]}
     />
   );
 };
