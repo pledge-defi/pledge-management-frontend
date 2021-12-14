@@ -6,10 +6,10 @@ import type { PledgePool } from '@/contracts/PledgePool';
 
 import { ethers } from 'ethers';
 
-const AddressPrivilegesAbi = require('@/abis/AddressPrivileges');
-const BscPledgeOracleAbi = require('@/abis/BscPledgeOracle');
-const DebtTokenAbi = require('@/abis/DebtToken');
-const PledgePoolAbi = require('@/abis/PledgePool');
+const AddressPrivilegesAbi = require('@/abis/AddressPrivileges.json');
+const BscPledgeOracleAbi = require('@/abis/BscPledgeOracle.json');
+const DebtTokenAbi = require('@/abis/DebtToken.json');
+const PledgePoolAbi = require('@/abis/PledgePool.json');
 
 const web3 = new Web3(Web3.givenProvider);
 
@@ -32,7 +32,7 @@ const getDebtTokenContract = (address: string) => {
 };
 
 const getPledgePoolContract = (address: string) => {
-  return new web3.eth.Contract(PledgePoolAbi, address) as unknown as {
+  return new web3.eth.Contract(PledgePoolAbi, address) as {
     methods: PledgePool;
   };
 };

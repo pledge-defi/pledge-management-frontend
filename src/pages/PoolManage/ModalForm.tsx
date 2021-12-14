@@ -39,15 +39,15 @@ export default () => {
       }}
     >
       <ProFormSelect name="id" label="pool" />
-      <ProFormSelect name="id" label="underly asset" />
-      <ProFormText name="id" label="Maximun deposit" />
-      <ProFormText name="id" label="fixed rate(%)" />
-      <ProFormText name="id" label="Collateralization ratio(%)" />
-      <ProFormText name="id" label="Margin ratio(%)" />
-      <ProFormText name="id" label="Minimun deposit" />
-      <ProFormText name="id" label="Minimun loan" />
+      <ProFormSelect name="id" label="underlying asset" />
+      <ProFormText name="id" label="Total financing" />
+      <ProFormText name="id" label="fixed rate（%）" />
+      <ProFormText name="id" label="Collateralization ratio（%）" />
+      <ProFormText name="id" label="Margin ratio（%）" />
+      <ProFormText name="id" label="Minimum deposit" />
+      <ProFormText name="id" label="Minimum loan" />
       <ProFormDateRangePicker name="id" label="Settlement date" />
-      <ProFormDateRangePicker name="id" label="maturity date" />
+      <ProFormSelect name="id" label="length" />
     </ModalForm>
   );
 };
