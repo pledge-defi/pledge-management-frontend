@@ -1,4 +1,5 @@
 import services from '@/services';
+import { pledge_address } from '@/utils/constants';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProFormDatePicker, ProFormSelect, ProFormText, StepsForm } from '@ant-design/pro-form';
 import { Button, Form, message, Modal } from 'antd';
@@ -20,7 +21,7 @@ export default () => {
       formStep2.setFieldsValue({
         sp_address: get(sp_contract, '_address'),
         jp_address: get(jp_contract, '_address'),
-        pledge_address: '0x7980AEA60bc71977Ab61cFD7F0FaB4E75b808371',
+        pledge_address,
       });
       formStep3.setFieldsValue({
         _spToken,
@@ -33,7 +34,7 @@ export default () => {
     }
   };
 
-  const handleFinishSecondStep = async ({ sp_address, jp_address, pledge_address }: any) => {
+  const handleFinishSecondStep = async ({ sp_address, jp_address }: any) => {
     // 添加管理员
     try {
       await services.evmServer.addMinter(sp_address, pledge_address);
@@ -59,7 +60,7 @@ export default () => {
   }: any) => {
     try {
       await services.evmServer.createPoolInfo(
-        '0x7980AEA60bc71977Ab61cFD7F0FaB4E75b808371',
+        pledge_address,
         moment(_settleTime).valueOf().toString(),
         moment(_endTime).valueOf().toString(),
         _interestRate,
