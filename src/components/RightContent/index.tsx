@@ -3,17 +3,9 @@ import React from 'react';
 import { useModel } from 'umi';
 import ConnectWallet from '../ConnectWallet';
 import Avatar from './AvatarDropdown';
-import { Web3ReactProvider } from '@web3-react/core';
-import { Web3Provider } from '@ethersproject/providers';
 import styles from './index.less';
 
 export type SiderTheme = 'light' | 'dark';
-
-function getLibrary(provider) {
-  const library = new Web3Provider(provider);
-  library.pollingInterval = 5000;
-  return library;
-}
 
 const GlobalHeaderRight: React.FC = () => {
   const { initialState } = useModel('@@initialState');
@@ -29,13 +21,11 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Space className={className}>
-        <ConnectWallet />
-        <Avatar />
-        {/* <SelectLang className={styles.action} /> */}
-      </Space>
-    </Web3ReactProvider>
+    <Space className={className}>
+      <ConnectWallet />
+      <Avatar />
+      {/* <SelectLang className={styles.action} /> */}
+    </Space>
   );
 };
 export default GlobalHeaderRight;

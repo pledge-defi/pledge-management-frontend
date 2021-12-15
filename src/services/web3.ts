@@ -1,10 +1,10 @@
-import Web3 from 'web3';
 import type { AddressPrivileges } from '@/contracts/AddressPrivileges';
 import type { BscPledgeOracle } from '@/contracts/BscPledgeOracle';
-import type { DebtToken } from '@/contracts/DebtToken';
 import type { PledgePool } from '@/contracts/PledgePool';
-
+import type { DebtToken } from '@/contracts/DebtToken';
 import { ethers } from 'ethers';
+import Web3 from 'web3';
+import type { Contract } from 'web3-eth-contract';
 
 const AddressPrivilegesAbi = require('@/abis/AddressPrivileges.json');
 const BscPledgeOracleAbi = require('@/abis/BscPledgeOracle.json');
@@ -12,6 +12,9 @@ const DebtTokenAbi = require('@/abis/DebtToken.json');
 const PledgePoolAbi = require('@/abis/PledgePool.json');
 
 const web3 = new Web3(Web3.givenProvider);
+interface SubContract<T> extends Contract {
+  methods: T;
+}
 
 const getAddressPrivilegesContract = (address: string) => {
   return new web3.eth.Contract(AddressPrivilegesAbi, address) as unknown as {
@@ -25,10 +28,8 @@ const getBscPledgeOracleAbiContract = (address: string) => {
   };
 };
 
-const getDebtTokenContract = (address: string) => {
-  return new web3.eth.Contract(DebtTokenAbi, address) as unknown as {
-    methods: DebtToken;
-  };
+const getDebtTokenContract = (address?: string) => {
+  return new web3.eth.Contract(DebtTokenAbi, address) as SubContract<DebtToken>;
 };
 
 const getPledgePoolContract = (address: string) => {
@@ -46,11 +47,11 @@ const getDefaultAccount = async () => {
 };
 
 const gasOptions = async (params = {}) => {
-  const gasLimit = Web3.utils.toHex(500000);
+  // const gasLimit = gas || Web3.utils.toHex(500000);
   const from = await getDefaultAccount();
   return {
     from,
-    gasLimit,
+    // gasLimit,
     ...params,
   };
 };

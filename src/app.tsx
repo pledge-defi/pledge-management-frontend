@@ -2,11 +2,23 @@ import Footer from '@/components/Footer';
 import RightContent from '@/components/RightContent';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
+import { Web3Provider } from '@ethersproject/providers';
+import { Web3ReactProvider } from '@web3-react/core';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 
 const loginPath = '/user/login';
+
+function getLibrary(provider: any) {
+  const library = new Web3Provider(provider);
+  library.pollingInterval = 5000;
+  return library;
+}
+
+export function rootContainer(container: any) {
+  return <Web3ReactProvider getLibrary={getLibrary}>{container}</Web3ReactProvider>;
+}
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
