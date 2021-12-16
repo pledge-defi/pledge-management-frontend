@@ -67,8 +67,8 @@ export default ({ callback }: Props) => {
     try {
       await services.evmServer.createPoolInfo(
         pledge_address,
-        moment(_settleTime).valueOf().toString(),
-        moment(_endTime).valueOf().toString(),
+        moment(_settleTime).unix().toString(),
+        moment(_endTime).unix().toString(),
         _interestRate,
         _maxSupply,
         _martgageRate,
