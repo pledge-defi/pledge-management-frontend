@@ -26,3 +26,12 @@ declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 declare interface Window {
   ethereum: any;
 }
+
+declare namespace Global {
+  type Option = {
+    label?: string | React.ReactNode;
+    value?: number | string;
+    disabled?: boolean;
+    [key: string]: any;
+  };
+}

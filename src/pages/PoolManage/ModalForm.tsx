@@ -1,5 +1,6 @@
 import services from '@/services';
 import { pledge_address } from '@/utils/constants';
+import { staticOptions } from '@/utils/staticOptions';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProFormDatePicker, ProFormSelect, ProFormText, StepsForm } from '@ant-design/pro-form';
 import { Button, Form, message, Modal } from 'antd';
@@ -7,7 +8,11 @@ import { get } from 'lodash';
 import moment from 'moment';
 import { useState } from 'react';
 
-export default () => {
+type Props = {
+  callback?: () => void;
+};
+
+export default ({ callback }: Props) => {
   const [visible, setVisible] = useState(false);
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
@@ -58,6 +63,7 @@ export default () => {
     sp_address,
     jp_address,
   }: any) => {
+    // create pool
     try {
       await services.evmServer.createPoolInfo(
         pledge_address,
@@ -73,6 +79,7 @@ export default () => {
         _autoLiquidateThreshold,
       );
       message.success('Created successfully');
+      callback?.();
       setVisible(false);
       return true;
     } catch (err: any) {
@@ -127,18 +134,12 @@ export default () => {
           <ProFormSelect
             name="_lendToken"
             label="contractAddress"
-            options={[
-              { label: 'BUSD', value: '0xDc6dF65b2fA0322394a8af628Ad25Be7D7F413c2' },
-              { label: 'DAI', value: '0xf2bDB4ba16b7862A1bf0BE03CD5eE25147d7F096' },
-            ]}
+            options={staticOptions.lendToken}
           />
           <ProFormSelect
             name="_borrowToken"
             label="underlying asset"
-            options={[
-              { label: 'BTC', value: '0xF592aa48875a5FDE73Ba64B527477849C73787ad' },
-              { label: 'BNB', value: '0x0000000000000000000000000000000000000000' },
-            ]}
+            options={staticOptions.borrowToken}
           />
 
           <ProFormText name="_maxSupply" label="Maximum deposit" />
