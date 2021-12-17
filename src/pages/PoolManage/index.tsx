@@ -34,14 +34,19 @@ const columns: ColumnsType<any> = [
     dataIndex: 'borrowToken',
     render: (t: string) => getFieldsLabel('borrowToken', t),
   },
-  { title: 'supply rate', dataIndex: 'interestRate', render: (t) => numeral(t).format('0%') },
-  { title: 'borrow rate', dataIndex: 'interestRate', render: (t) => numeral(t).format('0%') },
+  {
+    title: 'supply rate %',
+    dataIndex: 'interestRate',
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+  },
+  {
+    title: 'borrow rate %',
+    dataIndex: 'interestRate',
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+  },
   {
     title: 'Total financing',
     dataIndex: 'maxSupply',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
   },
   {
     title: 'Settlement date',
@@ -56,16 +61,17 @@ const columns: ColumnsType<any> = [
     },
   },
   {
-    title: 'Collateralization ratio',
+    title: 'Collateralization ratio %',
     dataIndex: 'martgageRate',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
+    // render: (t: string) => {
+    //   return +t / Math.pow(10, 8);
+    // },
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
   },
   {
-    title: 'margin ratio',
+    title: 'margin ratio %',
     dataIndex: 'autoLiquidateThreshold',
-    render: (t) => numeral(t).format('0%'),
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
   },
   {
     title: 'state',

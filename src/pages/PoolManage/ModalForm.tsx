@@ -69,20 +69,21 @@ export default ({ callback }: Props) => {
         pledge_address,
         moment(_settleTime).unix().toString(),
         moment(_endTime).unix().toString(),
-        (_interestRate / 100).toString(),
+        (_interestRate * Math.pow(10, 6)).toString(),
         _maxSupply,
-        (_martgageRate / 100).toString(),
+        (_martgageRate * Math.pow(10, 6)).toString(),
         _lendToken,
         _borrowToken,
         sp_address,
         jp_address,
-        (_autoLiquidateThreshold / 100).toString(),
+        (_autoLiquidateThreshold * Math.pow(10, 6)).toString(),
       );
       message.success('Created successfully');
       callback?.();
       setVisible(false);
       return true;
     } catch (err: any) {
+      console.log(err);
       message.error('createPoolInfo', err.toString());
       return false;
     }
