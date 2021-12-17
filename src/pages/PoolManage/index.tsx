@@ -3,7 +3,7 @@ import services from '@/services';
 import { FORMAT_TIME } from '@/utils/constants';
 import { getFieldsLabel, staticOptions } from '@/utils/staticOptions';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Card, Select, Space, Spin, Table } from 'antd';
+import { Button, Card, Form, Select, Space, Spin, Table } from 'antd';
 import type { ColumnsType } from 'antd/lib/table/interface.d';
 import { size } from 'lodash';
 import moment from 'moment';
@@ -78,7 +78,7 @@ const columns: ColumnsType<any> = [
     dataIndex: 'state',
     render: (t: string) => getFieldsLabel('state', t),
   },
-  { title: 'create time', dataIndex: '' },
+  { title: 'maturity time', dataIndex: '' },
 ];
 
 export default () => {
@@ -136,22 +136,27 @@ export default () => {
           <FlexDiv>
             <ModalForm callback={handleClickSearch} />
             <Space>
-              <Select
-                onChange={handleChangeLendToken}
-                options={staticOptions.lendToken}
-                style={{ width: '200px' }}
-                allowClear
-              />
-
-              <Select
-                onChange={handleChangeState}
-                options={staticOptions.state}
-                style={{ width: '200px' }}
-                allowClear
-              />
-              <Button type="primary" onClick={handleClickSearch}>
-                Search
-              </Button>
+              <Form.Item label={'pool'}>
+                <Select
+                  onChange={handleChangeLendToken}
+                  options={staticOptions.lendToken}
+                  style={{ width: '200px' }}
+                  allowClear
+                />
+              </Form.Item>
+              <Form.Item label="state">
+                <Select
+                  onChange={handleChangeState}
+                  options={staticOptions.state}
+                  style={{ width: '200px' }}
+                  allowClear
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" onClick={handleClickSearch}>
+                  Search
+                </Button>
+              </Form.Item>
             </Space>
           </FlexDiv>
         </Card>
