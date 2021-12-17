@@ -7,6 +7,7 @@ import { Button, Card, Select, Space, Spin, Table } from 'antd';
 import type { ColumnsType } from 'antd/lib/table/interface.d';
 import { size } from 'lodash';
 import moment from 'moment';
+import numeral from 'numeral';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ModalForm from './ModalForm';
@@ -33,8 +34,8 @@ const columns: ColumnsType<any> = [
     dataIndex: 'borrowToken',
     render: (t: string) => getFieldsLabel('borrowToken', t),
   },
-  { title: 'supply rate', dataIndex: 'interestRate' },
-  { title: 'borrow rate', dataIndex: 'interestRate' },
+  { title: 'supply rate', dataIndex: 'interestRate', render: (t) => numeral(t).format('0%') },
+  { title: 'borrow rate', dataIndex: 'interestRate', render: (t) => numeral(t).format('0%') },
   {
     title: 'Total financing',
     dataIndex: 'maxSupply',
@@ -64,9 +65,7 @@ const columns: ColumnsType<any> = [
   {
     title: 'margin ratio',
     dataIndex: 'autoLiquidateThreshold',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
+    render: (t) => numeral(t).format('0%'),
   },
   {
     title: 'state',

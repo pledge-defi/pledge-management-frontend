@@ -69,14 +69,14 @@ export default ({ callback }: Props) => {
         pledge_address,
         moment(_settleTime).unix().toString(),
         moment(_endTime).unix().toString(),
-        _interestRate,
+        (_interestRate / 100).toString(),
         _maxSupply,
-        _martgageRate,
+        (_martgageRate / 100).toString(),
         _lendToken,
         _borrowToken,
         sp_address,
         jp_address,
-        _autoLiquidateThreshold,
+        (_autoLiquidateThreshold / 100).toString(),
       );
       message.success('Created successfully');
       callback?.();
@@ -131,11 +131,7 @@ export default ({ callback }: Props) => {
           <ProFormText name="_spToken" label="SP_token symbol" disabled />
           <ProFormText name="_jpToken" label="JP_token symbol" disabled />
 
-          <ProFormSelect
-            name="_lendToken"
-            label="contractAddress"
-            options={staticOptions.lendToken}
-          />
+          <ProFormSelect name="_lendToken" label="pool" options={staticOptions.lendToken} />
           <ProFormSelect
             name="_borrowToken"
             label="underlying asset"
