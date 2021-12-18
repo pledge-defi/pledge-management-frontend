@@ -8,6 +8,13 @@ import { get } from 'lodash';
 import moment from 'moment';
 import { useState } from 'react';
 
+// const validator = (_: any, value: string, cback: any) => {
+//   if (value && value.length > 11) {
+//     return cback('The number of characters cannot exceed 11');
+//   }
+//   return;
+// };
+
 type Props = {
   callback?: () => void;
 };
@@ -113,10 +120,42 @@ export default ({ callback }: Props) => {
         }}
       >
         <StepsForm.StepForm title={'create SP & JP token'} onFinish={handleFinishFirstStep}>
-          <ProFormText name="sp_name" label="SP_token name" />
-          <ProFormText name="_spToken" label="SP_token symbol" />
-          <ProFormText name="jp_name" label="JP_token name" />
-          <ProFormText name="_jpToken" label="JP_token symbol" />
+          <ProFormText
+            name="sp_name"
+            label="SP_token name"
+            // rules={[
+            //   {
+            //     validator,
+            //   },
+            // ]}
+          />
+          <ProFormText
+            name="_spToken"
+            label="SP_token symbol"
+            // rules={[
+            //   {
+            //     validator,
+            //   },
+            // ]}
+          />
+          <ProFormText
+            name="jp_name"
+            label="JP_token name"
+            // rules={[
+            //   {
+            //     validator,
+            //   },
+            // ]}
+          />
+          <ProFormText
+            name="_jpToken"
+            label="JP_token symbol"
+            // rules={[
+            //   {
+            //     validator,
+            //   },
+            // ]}
+          />
         </StepsForm.StepForm>
         <StepsForm.StepForm
           name="id"
