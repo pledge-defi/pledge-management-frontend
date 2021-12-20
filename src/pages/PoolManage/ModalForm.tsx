@@ -2,18 +2,24 @@ import services from '@/services';
 import { pledge_address } from '@/utils/constants';
 import { staticOptions } from '@/utils/staticOptions';
 import { PlusOutlined } from '@ant-design/icons';
-import { ProFormDatePicker, ProFormSelect, ProFormText, StepsForm } from '@ant-design/pro-form';
+import {
+  ProFormDatePicker,
+  ProFormSelect,
+  ProFormText,
+  StepsForm,
+  ProFormDigit,
+} from '@ant-design/pro-form';
 import { Button, Form, message, Modal } from 'antd';
 import { get } from 'lodash';
 import moment from 'moment';
 import { useState } from 'react';
 
-// const validator = (_: any, value: string, cback: any) => {
-//   if (value && value.length > 11) {
-//     return cback('The number of characters cannot exceed 11');
-//   }
-//   return;
-// };
+const validator = async (_: any, value: string) => {
+  if (value && value.length > 11) {
+    return Promise.reject(new Error('The number of characters cannot exceed 11'));
+  }
+  return Promise.resolve();
+};
 
 type Props = {
   callback?: () => void;
@@ -123,38 +129,38 @@ export default ({ callback }: Props) => {
           <ProFormText
             name="sp_name"
             label="SP_token name"
-            // rules={[
-            //   {
-            //     validator,
-            //   },
-            // ]}
+            rules={[
+              {
+                validator,
+              },
+            ]}
           />
           <ProFormText
             name="_spToken"
             label="SP_token symbol"
-            // rules={[
-            //   {
-            //     validator,
-            //   },
-            // ]}
+            rules={[
+              {
+                validator,
+              },
+            ]}
           />
           <ProFormText
             name="jp_name"
             label="JP_token name"
-            // rules={[
-            //   {
-            //     validator,
-            //   },
-            // ]}
+            rules={[
+              {
+                validator,
+              },
+            ]}
           />
           <ProFormText
             name="_jpToken"
             label="JP_token symbol"
-            // rules={[
-            //   {
-            //     validator,
-            //   },
-            // ]}
+            rules={[
+              {
+                validator,
+              },
+            ]}
           />
         </StepsForm.StepForm>
         <StepsForm.StepForm
@@ -171,19 +177,99 @@ export default ({ callback }: Props) => {
           <ProFormText name="_spToken" label="SP_token symbol" disabled />
           <ProFormText name="_jpToken" label="JP_token symbol" disabled />
 
-          <ProFormSelect name="_lendToken" label="pool" options={staticOptions.lendToken} />
+          <ProFormSelect
+            name="_lendToken"
+            label="pool"
+            options={staticOptions.lendToken}
+            rules={[
+              {
+                required: true,
+                message: 'The token information was not found',
+              },
+            ]}
+          />
           <ProFormSelect
             name="_borrowToken"
             label="underlying asset"
             options={staticOptions.borrowToken}
+            rules={[
+              {
+                required: true,
+                message: 'The token information was not found',
+              },
+            ]}
           />
 
-          <ProFormText name="_maxSupply" label="Maximum deposit" />
-          <ProFormText name="_interestRate" label="fixed rate（%）" />
-          <ProFormText name="_martgageRate" label="Collateralization ratio（%）" />
-          <ProFormText name="_autoLiquidateThreshold" label="Margin ratio（%）" />
-          <ProFormDatePicker name="_settleTime" label="Settlement date" />
-          <ProFormDatePicker name="_endTime" label="maturity date" />
+          <ProFormDigit
+            name="_maxSupply"
+            label="Maximum deposit"
+            placeholder={'Greater than 0'}
+            min={0}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number greater than 0',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_interestRate"
+            label="fixed rate（%）"
+            placeholder={'(0 ~ 100)'}
+            min={0}
+            max={100}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number from 0 to 100',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_martgageRate"
+            label="Collateralization ratio（%）"
+            placeholder={'Greater than 0'}
+            min={0}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number greater than 0',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_autoLiquidateThreshold"
+            label="Margin ratio（%）"
+            placeholder={'(0 ~ 100)'}
+            min={0}
+            max={100}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number from 0 to 100',
+              },
+            ]}
+          />
+          <ProFormDatePicker
+            name="_settleTime"
+            label="Settlement date"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a date',
+              },
+            ]}
+          />
+          <ProFormDatePicker
+            name="_endTime"
+            label="maturity date"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a date',
+              },
+            ]}
+          />
         </StepsForm.StepForm>
       </StepsForm>
     </>
