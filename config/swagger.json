@@ -151,9 +151,17 @@
       }
     },
     "SearchResponse": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/PoolData"
+      "type": "object",
+      "properties": {
+        "totalNum": {
+          "type": "string"
+        },
+        "poolList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PoolData"
+          }
+        }
       }
     },
     "PoolData": {

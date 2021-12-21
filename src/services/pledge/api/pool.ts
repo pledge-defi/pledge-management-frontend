@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import request from '@/utils/request';
 
 /** Get pool by conditions POST /pool/search */
 export async function getPoolByConditions(

@@ -8,7 +8,10 @@ declare namespace API {
     token_id: string;
   };
 
-  type SearchResponse = PoolData[];
+  type SearchResponse = {
+    totalNum?: string;
+    poolList?: PoolData[];
+  };
 
   type PoolData = {
     settleTime?: string;

@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import request from '@/utils/request';
 
 /** Logs user into the system POST /user/login */
 export async function loginUser(body: API.Login, options?: { [key: string]: any }) {
