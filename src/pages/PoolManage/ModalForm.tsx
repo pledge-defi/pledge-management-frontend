@@ -145,7 +145,6 @@ export default ({ callback }: Props) => {
         Create pool
       </Button>
       <StepsForm
-        current={2}
         submitter={{ resetButtonProps: { style: { display: 'none' } } }}
         onFinish={handleFinishThirdStep}
         stepsFormRender={(dom, submitter) => {
