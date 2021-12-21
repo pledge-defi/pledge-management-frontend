@@ -3,10 +3,11 @@ import services from '@/services';
 import { FORMAT_TIME } from '@/utils/constants';
 import { getFieldsLabel, staticOptions } from '@/utils/staticOptions';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Card, Select, Space, Spin, Table } from 'antd';
+import { Button, Card, Form, Select, Space, Spin, Table } from 'antd';
 import type { ColumnsType } from 'antd/lib/table/interface.d';
 import { size } from 'lodash';
 import moment from 'moment';
+import numeral from 'numeral';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ModalForm from './ModalForm';
@@ -33,14 +34,19 @@ const columns: ColumnsType<any> = [
     dataIndex: 'borrowToken',
     render: (t: string) => getFieldsLabel('borrowToken', t),
   },
-  { title: 'supply rate', dataIndex: 'interestRate' },
-  { title: 'borrow rate', dataIndex: 'interestRate' },
+  {
+    title: 'supply rate %',
+    dataIndex: 'interestRate',
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+  },
+  {
+    title: 'borrow rate %',
+    dataIndex: 'interestRate',
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+  },
   {
     title: 'Total financing',
     dataIndex: 'maxSupply',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
   },
   {
     title: 'Settlement date',
@@ -55,25 +61,24 @@ const columns: ColumnsType<any> = [
     },
   },
   {
-    title: 'Collateralization ratio',
+    title: 'Collateralization ratio %',
     dataIndex: 'martgageRate',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
+    // render: (t: string) => {
+    //   return +t / Math.pow(10, 8);
+    // },
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
   },
   {
-    title: 'margin ratio',
+    title: 'margin ratio %',
     dataIndex: 'autoLiquidateThreshold',
-    render: (t: string) => {
-      return +t / Math.pow(10, 8);
-    },
+    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
   },
   {
     title: 'state',
     dataIndex: 'state',
     render: (t: string) => getFieldsLabel('state', t),
   },
-  { title: 'create time', dataIndex: '' },
+  { title: 'maturity time', dataIndex: '' },
 ];
 
 export default () => {
@@ -131,22 +136,27 @@ export default () => {
           <FlexDiv>
             <ModalForm callback={handleClickSearch} />
             <Space>
-              <Select
-                onChange={handleChangeLendToken}
-                options={staticOptions.lendToken}
-                style={{ width: '200px' }}
-                allowClear
-              />
-
-              <Select
-                onChange={handleChangeState}
-                options={staticOptions.state}
-                style={{ width: '200px' }}
-                allowClear
-              />
-              <Button type="primary" onClick={handleClickSearch}>
-                Search
-              </Button>
+              <Form.Item label={'pool'}>
+                <Select
+                  onChange={handleChangeLendToken}
+                  options={staticOptions.lendToken}
+                  style={{ width: '200px' }}
+                  allowClear
+                />
+              </Form.Item>
+              <Form.Item label="state">
+                <Select
+                  onChange={handleChangeState}
+                  options={staticOptions.state}
+                  style={{ width: '200px' }}
+                  allowClear
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" onClick={handleClickSearch}>
+                  Search
+                </Button>
+              </Form.Item>
             </Space>
           </FlexDiv>
         </Card>

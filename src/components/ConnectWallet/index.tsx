@@ -68,7 +68,7 @@ const ConnectWallet: React.FC<IConnectWallet> = ({ typeUI, className, style, chi
       //TODO: move `typeUI` outside
       if (typeUI === 'header') {
         return (
-          <div className="wallet-connected wallet-header">
+          <div className="wallet-connected wallet-header" onClick={handleOnCLickConnectWallet}>
             <img
               src={require('@/assets/images/wallet.svg')}
               alt=""

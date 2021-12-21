@@ -1,19 +1,35 @@
 import services from '@/services';
-import { pledge_address } from '@/utils/constants';
-import { staticOptions } from '@/utils/staticOptions';
+import { PLEDGE_ADDRESS } from '@/utils/constants';
 import { PlusOutlined } from '@ant-design/icons';
-import { ProFormDatePicker, ProFormSelect, ProFormText, StepsForm } from '@ant-design/pro-form';
+import {
+  ProFormDatePicker,
+  ProFormDigit,
+  ProFormSelect,
+  ProFormText,
+  StepsForm,
+} from '@ant-design/pro-form';
+import type { SelectProps } from 'antd';
 import { Button, Form, message, Modal } from 'antd';
 import { get } from 'lodash';
 import moment from 'moment';
 import { useState } from 'react';
+
+const validator = async (_: any, value: string) => {
+  if (value && value.length > 11) {
+    return Promise.reject(new Error('The number of characters cannot exceed 11'));
+  }
+  return Promise.resolve();
+};
 
 type Props = {
   callback?: () => void;
 };
 
 export default ({ callback }: Props) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
+  const [borrowTokenOption, setBorrowTokenOption] = useState<SelectProps<any>['options']>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
 
@@ -26,7 +42,7 @@ export default ({ callback }: Props) => {
       formStep2.setFieldsValue({
         sp_address: get(sp_contract, '_address'),
         jp_address: get(jp_contract, '_address'),
-        pledge_address,
+        pledge_address: PLEDGE_ADDRESS,
       });
       formStep3.setFieldsValue({
         _spToken,
@@ -42,8 +58,8 @@ export default ({ callback }: Props) => {
   const handleFinishSecondStep = async ({ sp_address, jp_address }: any) => {
     // 添加管理员
     try {
-      await services.evmServer.addMinter(sp_address, pledge_address);
-      await services.evmServer.addMinter(jp_address, pledge_address);
+      await services.evmServer.addMinter(sp_address, PLEDGE_ADDRESS);
+      await services.evmServer.addMinter(jp_address, PLEDGE_ADDRESS);
       return true;
     } catch (err: unknown) {
       console.error('addMinter', err);
@@ -66,26 +82,61 @@ export default ({ callback }: Props) => {
     // create pool
     try {
       await services.evmServer.createPoolInfo(
-        pledge_address,
+        PLEDGE_ADDRESS,
         moment(_settleTime).unix().toString(),
         moment(_endTime).unix().toString(),
-        _interestRate,
+        (_interestRate * Math.pow(10, 6)).toString(),
         _maxSupply,
-        _martgageRate,
+        (_martgageRate * Math.pow(10, 6)).toString(),
         _lendToken,
         _borrowToken,
         sp_address,
         jp_address,
-        _autoLiquidateThreshold,
+        (_autoLiquidateThreshold * Math.pow(10, 6)).toString(),
       );
       message.success('Created successfully');
       callback?.();
       setVisible(false);
       return true;
     } catch (err: any) {
+      console.log(err);
       message.error('createPoolInfo', err.toString());
       return false;
     }
+  };
+
+  const searchContractDetail = async (v: string | undefined) => {
+    // 0xDc6dF65b2fA0322394a8af628Ad25Be7D7F413c2
+    const value = v?.trim();
+    if (value) {
+      setLoading(true);
+      try {
+        const price = await services.evmServer.getPrice(value);
+        if (price) {
+          const symbol = await services.evmServer.getSymbol(value);
+          if (symbol) {
+            setLoading(false);
+
+            return [{ label: symbol, value }];
+          }
+        }
+      } catch (error) {
+        setLoading(false);
+        // console.log(error);
+        return undefined;
+      }
+    }
+    return undefined;
+  };
+
+  const handleLendTokenSearch = async (v: string | undefined) => {
+    const value = await searchContractDetail(v);
+    setLendTokenOption(value);
+  };
+
+  const handleBorrowTokenSearch = async (v: string | undefined) => {
+    const value = await searchContractDetail(v);
+    setBorrowTokenOption(value);
   };
 
   return (
@@ -111,11 +162,56 @@ export default ({ callback }: Props) => {
           );
         }}
       >
-        <StepsForm.StepForm title={'create SP & JP token'} onFinish={handleFinishFirstStep}>
-          <ProFormText name="sp_name" label="SP_token name" />
-          <ProFormText name="_spToken" label="SP_token symbol" />
-          <ProFormText name="jp_name" label="JP_token name" />
-          <ProFormText name="_jpToken" label="JP_token symbol" />
+        <StepsForm.StepForm
+          title={'create SP & JP token'}
+          onValuesChange={async ({ pledge_address }) => {
+            try {
+              await services.evmServer.getPrice(pledge_address);
+              await services.evmServer.getSymbol(pledge_address);
+            } catch (err: any) {
+              console.log(err);
+            }
+          }}
+          onFinish={handleFinishFirstStep}
+        >
+          <ProFormText name="pledge_address" label={'pledge contract address'} />
+
+          <ProFormText
+            name="sp_name"
+            label="SP_token name"
+            rules={[
+              {
+                validator,
+              },
+            ]}
+          />
+          <ProFormText
+            name="_spToken"
+            label="SP_token symbol"
+            rules={[
+              {
+                validator,
+              },
+            ]}
+          />
+          <ProFormText
+            name="jp_name"
+            label="JP_token name"
+            rules={[
+              {
+                validator,
+              },
+            ]}
+          />
+          <ProFormText
+            name="_jpToken"
+            label="JP_token symbol"
+            rules={[
+              {
+                validator,
+              },
+            ]}
+          />
         </StepsForm.StepForm>
         <StepsForm.StepForm
           name="id"
@@ -133,21 +229,101 @@ export default ({ callback }: Props) => {
 
           <ProFormSelect
             name="_lendToken"
-            label="contractAddress"
-            options={staticOptions.lendToken}
+            label="pool"
+            showSearch
+            fieldProps={{ onSearch: handleLendTokenSearch, optionFilterProp: 'value', loading }}
+            options={lendTokenOption}
+            rules={[
+              {
+                required: true,
+                message: 'The token information was not found',
+              },
+            ]}
           />
           <ProFormSelect
             name="_borrowToken"
             label="underlying asset"
-            options={staticOptions.borrowToken}
+            showSearch
+            fieldProps={{ onSearch: handleBorrowTokenSearch, optionFilterProp: 'value', loading }}
+            options={borrowTokenOption}
+            rules={[
+              {
+                required: true,
+                message: 'The token information was not found',
+              },
+            ]}
           />
 
-          <ProFormText name="_maxSupply" label="Maximum deposit" />
-          <ProFormText name="_interestRate" label="fixed rate（%）" />
-          <ProFormText name="_martgageRate" label="Collateralization ratio（%）" />
-          <ProFormText name="_autoLiquidateThreshold" label="Margin ratio（%）" />
-          <ProFormDatePicker name="_settleTime" label="Settlement date" />
-          <ProFormDatePicker name="_endTime" label="maturity date" />
+          <ProFormDigit
+            name="_maxSupply"
+            label="Maximum deposit"
+            placeholder={'Greater than 0'}
+            min={0}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number greater than 0',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_interestRate"
+            label="fixed rate（%）"
+            placeholder={'(0 ~ 100)'}
+            min={0}
+            max={100}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number from 0 to 100',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_martgageRate"
+            label="Collateralization ratio（%）"
+            placeholder={'Greater than 0'}
+            min={0}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number greater than 0',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="_autoLiquidateThreshold"
+            label="Margin ratio（%）"
+            placeholder={'(0 ~ 100)'}
+            min={0}
+            max={100}
+            rules={[
+              {
+                required: true,
+                message: 'Please enter a number from 0 to 100',
+              },
+            ]}
+          />
+          <ProFormDatePicker
+            name="_settleTime"
+            label="Settlement date"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a date',
+              },
+            ]}
+          />
+          <ProFormDatePicker
+            name="_endTime"
+            label="maturity date"
+            rules={[
+              {
+                required: true,
+                message: 'Please select a date',
+              },
+            ]}
+          />
         </StepsForm.StepForm>
       </StepsForm>
     </>

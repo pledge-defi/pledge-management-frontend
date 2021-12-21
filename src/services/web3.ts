@@ -22,7 +22,7 @@ const getAddressPrivilegesContract = (address: string) => {
   };
 };
 
-const getBscPledgeOracleAbiContract = (address: string) => {
+const getBscPledgeOracleAbiContract = (address?: string) => {
   return new web3.eth.Contract(BscPledgeOracleAbi, address) as unknown as {
     methods: BscPledgeOracle;
   };

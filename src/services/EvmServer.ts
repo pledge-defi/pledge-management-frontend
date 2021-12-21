@@ -1,14 +1,20 @@
 import { byteCode } from '@/abis/deployCode';
 import type { AddEthereumChainParameter, BridgeConfigSimple } from '@/constants/ChainBridge.d';
 import type { PledgePool } from '@/contracts/PledgePool';
-import { pledge_address } from '@/utils/constants';
-import { gasOptions, getDebtTokenContract, getPledgePoolContract, web3 } from './web3';
+import { ORACLE_ADDRESS, PLEDGE_ADDRESS } from '@/utils/constants';
+import {
+  gasOptions,
+  getBscPledgeOracleAbiContract,
+  getDebtTokenContract,
+  getPledgePoolContract,
+  web3,
+} from './web3';
 
 export type CreatePoolRequestParams = Parameters<PledgePool['createPoolInfo']>;
 
 const MetacoreServer = {
   async getPoolBaseData() {
-    const contract = getPledgePoolContract(pledge_address);
+    const contract = getPledgePoolContract(PLEDGE_ADDRESS);
     const length = await contract.methods.poolLength().call();
     const poolbaseData = [];
     for (let i = 0; i < +length; i++) {
@@ -16,6 +22,16 @@ const MetacoreServer = {
       poolbaseData.push(data);
     }
     return poolbaseData;
+  },
+
+  async getPrice(asset: string) {
+    const contract = getBscPledgeOracleAbiContract(ORACLE_ADDRESS);
+    return await contract.methods.getPrice(asset).call();
+  },
+
+  async getSymbol(asset: string) {
+    const contract = getDebtTokenContract(asset);
+    return await contract.methods.symbol().call();
   },
 
   async createPoolInfo(contractAddress: string, ...arg: CreatePoolRequestParams) {
