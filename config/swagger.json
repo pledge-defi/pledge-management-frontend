@@ -40,7 +40,7 @@
             "description": "Pet object that needs to be added to the store",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Login"
+              "$ref": "#/definitions/LoginRequest"
             }
           }
         ],
@@ -64,7 +64,17 @@
         "description": "",
         "operationId": "logoutUser",
         "produces": ["application/xml", "application/json"],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LogoutRequest"
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": "successful operation"
@@ -72,18 +82,24 @@
         }
       }
     },
-    "/pool/debt_token_name": {
+    "/pool/debtTokenList": {
       "post": {
         "tags": ["pool"],
         "description": "",
-        "operationId": "debtTokenName",
+        "operationId": "debtTokenList",
         "produces": ["application/xml", "application/json"],
         "parameters": [],
         "responses": {
           "200": {
             "description": "successful operation",
             "schema": {
-              "$ref": "#/definitions/TokenName"
+              "$ref": "#/definitions/DebtTokenList"
+            }
+          },
+          "400": {
+            "description": "List not found",
+            "schema": {
+              "$ref": "#/definitions/DebtTokenError"
             }
           }
         }
@@ -98,34 +114,13 @@
         "produces": ["application/xml", "application/json"],
         "parameters": [
           {
-            "name": "poolID",
-            "in": "query",
-            "type": "integer",
-            "description": "Pool ID ",
-            "required": true
-          },
-          {
-            "name": "poolStatus",
-            "in": "query",
-            "type": "string",
-            "default": "match",
-            "required": true,
-            "description": "Pool status",
-            "enum": ["match", "running", "expired", "liquidation"]
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "integer",
-            "default": "1",
-            "description": "current page"
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "type": "integer",
-            "default": "10",
-            "description": "page size"
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/SearchRequest"
+            }
           }
         ],
         "responses": {
@@ -136,17 +131,17 @@
             }
           },
           "400": {
-            "description": "Invalid username supplied"
-          },
-          "404": {
-            "description": "Pool not found"
+            "description": "Pool not found",
+            "schema": {
+              "$ref": "#/definitions/SearchError"
+            }
           }
         }
       }
     }
   },
   "definitions": {
-    "Login": {
+    "LoginRequest": {
       "type": "object",
       "required": ["name", "password"],
       "properties": {
@@ -167,14 +162,50 @@
         }
       }
     },
-    "TokenName": {
+    "LogoutRequest": {
       "type": "object",
       "properties": {
-        "symbols": {
+        "token_id": {
+          "type": "string"
+        }
+      }
+    },
+    "DebtTokenList": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/DebtTokenData"
+        }
+      }
+    },
+    "DebtTokenData": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "rows": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Symbol"
           }
+        }
+      }
+    },
+    "DebtTokenError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },
@@ -189,21 +220,65 @@
         }
       }
     },
+    "SearchRequest": {
+      "type": "object",
+      "properties": {
+        "poolID": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "default": "1"
+        },
+        "pageSize": {
+          "type": "integer",
+          "default": "10"
+        }
+      }
+    },
     "SearchResponse": {
       "type": "object",
       "properties": {
-        "totalNum": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
           "type": "string"
         },
-        "poolList": {
+        "data": {
+          "$ref": "#/definitions/SearchData"
+        }
+      }
+    },
+    "SearchData": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "rows": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PoolData"
+            "$ref": "#/definitions/PoolInfo"
           }
         }
       }
     },
-    "PoolData": {
+    "SearchError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "PoolInfo": {
       "type": "object",
       "properties": {
         "settleTime": {
@@ -245,23 +320,28 @@
         "autoLiquidateThreshold": {
           "type": "string"
         },
-        "settleAmountLend": {
-          "type": "string"
-        },
-        "settleAmountBorrow": {
-          "type": "string"
-        },
-        "finishAmountLend": {
-          "type": "string"
-        },
-        "finishAmountBorrow": {
-          "type": "string"
-        },
-        "liquidationAmounLend": {
-          "type": "string"
-        },
-        "liquidationAmounBorrow": {
-          "type": "string"
+        "poolData": {
+          "type": "object",
+          "properties": {
+            "settleAmountLend": {
+              "type": "string"
+            },
+            "settleAmountBorrow": {
+              "type": "string"
+            },
+            "finishAmountLend": {
+              "type": "string"
+            },
+            "finishAmountBorrow": {
+              "type": "string"
+            },
+            "liquidationAmounLend": {
+              "type": "string"
+            },
+            "liquidationAmounBorrow": {
+              "type": "string"
+            }
+          }
         }
       }
     }

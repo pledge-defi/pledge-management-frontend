@@ -2,9 +2,9 @@
 /* eslint-disable */
 import request from '@/utils/request';
 
-/** 此处后端没有提供注释 POST /pool/debt_token_name */
-export async function debtTokenName(options?: { [key: string]: any }) {
-  return request<API.TokenName>('/pool/debt_token_name', {
+/** 此处后端没有提供注释 POST /pool/debtTokenList */
+export async function debtTokenList(options?: { [key: string]: any }) {
+  return request<API.DebtTokenList>('/pool/debtTokenList', {
     method: 'POST',
     ...(options || {}),
   });
@@ -12,21 +12,15 @@ export async function debtTokenName(options?: { [key: string]: any }) {
 
 /** Get pool by conditions POST /pool/search */
 export async function getPoolByConditions(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.getPoolByConditionsParams,
+  body: API.SearchRequest,
   options?: { [key: string]: any },
 ) {
   return request<API.SearchResponse>('/pool/search', {
     method: 'POST',
-    params: {
-      // poolStatus has a default value: match
-      poolStatus: 'match',
-      // page has a default value: 1
-      page: '1',
-      // pageSize has a default value: 10
-      pageSize: '10',
-      ...params,
+    headers: {
+      'Content-Type': 'application/json',
     },
+    data: body,
     ...(options || {}),
   });
 }

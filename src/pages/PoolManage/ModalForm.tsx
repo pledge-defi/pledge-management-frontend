@@ -1,8 +1,9 @@
 import services from '@/services';
 import { PLEDGE_ADDRESS } from '@/utils/constants';
+import { dealNumber } from '@/utils/public';
 import { PlusOutlined } from '@ant-design/icons';
 import {
-  ProFormDatePicker,
+  ProFormDateTimePicker,
   ProFormDigit,
   ProFormSelect,
   ProFormText,
@@ -86,7 +87,7 @@ export default ({ callback }: Props) => {
         moment(_settleTime).unix().toString(),
         moment(_endTime).unix().toString(),
         (_interestRate * Math.pow(10, 6)).toString(),
-        (_maxSupply * Math.pow(10, 8)).toString(),
+        dealNumber(_maxSupply)?.toFixed(),
         (_martgageRate * Math.pow(10, 6)).toString(),
         _lendToken,
         _borrowToken,
@@ -145,6 +146,7 @@ export default ({ callback }: Props) => {
         Create pool
       </Button>
       <StepsForm
+        // current={2}
         submitter={{ resetButtonProps: { style: { display: 'none' } } }}
         onFinish={handleFinishThirdStep}
         stepsFormRender={(dom, submitter) => {
@@ -302,7 +304,8 @@ export default ({ callback }: Props) => {
               },
             ]}
           />
-          <ProFormDatePicker
+          <ProFormDateTimePicker
+            fieldProps={{ showTime: { format: 'HH:mm' } }}
             name="_settleTime"
             label="Settlement date"
             rules={[
@@ -312,7 +315,8 @@ export default ({ callback }: Props) => {
               },
             ]}
           />
-          <ProFormDatePicker
+          <ProFormDateTimePicker
+            fieldProps={{ showTime: { format: 'HH:mm' } }}
             name="_endTime"
             label="maturity date"
             rules={[

@@ -1,5 +1,5 @@
 declare namespace API {
-  type Login = {
+  type LoginRequest = {
     name: string;
     password: string;
   };
@@ -8,8 +8,24 @@ declare namespace API {
     token_id: string;
   };
 
-  type TokenName = {
-    symbols?: Symbol[];
+  type LogoutRequest = {
+    token_id?: string;
+  };
+
+  type DebtTokenList = {
+    code?: number;
+    message?: string;
+    data?: DebtTokenData;
+  };
+
+  type DebtTokenData = {
+    count?: number;
+    rows?: Symbol[];
+  };
+
+  type DebtTokenError = {
+    code?: number;
+    message?: string;
   };
 
   type Symbol = {
@@ -17,12 +33,30 @@ declare namespace API {
     address?: string;
   };
 
-  type SearchResponse = {
-    totalNum?: string;
-    poolList?: PoolData[];
+  type SearchRequest = {
+    poolID?: number;
+    state?: string;
+    page?: number;
+    pageSize?: number;
   };
 
-  type PoolData = {
+  type SearchResponse = {
+    code?: number;
+    message?: string;
+    data?: SearchData;
+  };
+
+  type SearchData = {
+    count?: number;
+    rows?: PoolInfo[];
+  };
+
+  type SearchError = {
+    code?: number;
+    message?: string;
+  };
+
+  type PoolInfo = {
     settleTime?: string;
     endTime?: string;
     interestRate?: string;
@@ -36,22 +70,13 @@ declare namespace API {
     spCoin?: string;
     jpCoin?: string;
     autoLiquidateThreshold?: string;
-    settleAmountLend?: string;
-    settleAmountBorrow?: string;
-    finishAmountLend?: string;
-    finishAmountBorrow?: string;
-    liquidationAmounLend?: string;
-    liquidationAmounBorrow?: string;
-  };
-
-  type getPoolByConditionsParams = {
-    /** Pool ID  */
-    poolID: number;
-    /** Pool status */
-    poolStatus: 'match' | 'running' | 'expired' | 'liquidation';
-    /** current page */
-    page?: number;
-    /** page size */
-    pageSize?: number;
+    poolData?: {
+      settleAmountLend?: string;
+      settleAmountBorrow?: string;
+      finishAmountLend?: string;
+      finishAmountBorrow?: string;
+      liquidationAmounLend?: string;
+      liquidationAmounBorrow?: string;
+    };
   };
 }
