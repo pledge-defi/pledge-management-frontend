@@ -13,6 +13,7 @@ export const dealNumber_18 = (num: BigNumber.Value) => {
   const y = new BigNumber(1e18);
   return x.dividedBy(y).toFixed();
 };
+
 export const dealNumber_8 = (num: BigNumber.Value) => {
   if (!num) return undefined;
   const x = new BigNumber(num);

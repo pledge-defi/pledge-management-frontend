@@ -52,7 +52,10 @@
             }
           },
           "400": {
-            "description": "Invalid username/password supplied"
+            "description": "Invalid username/password supplied",
+            "schema": {
+              "$ref": "#/definitions/LoginError"
+            }
           }
         }
       }
@@ -76,8 +79,17 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "successful operation"
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/LogoutResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied",
+            "schema": {
+              "$ref": "#/definitions/LogoutResponse"
+            }
           }
         }
       }
@@ -155,7 +167,31 @@
     },
     "LoginResponse": {
       "type": "object",
-      "required": ["token_id"],
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/LoginData"
+        }
+      }
+    },
+    "LoginError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginData": {
+      "type": "object",
       "properties": {
         "token_id": {
           "type": "string"
@@ -166,6 +202,17 @@
       "type": "object",
       "properties": {
         "token_id": {
+          "type": "string"
+        }
+      }
+    },
+    "LogoutResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
           "type": "string"
         }
       }

@@ -5,11 +5,27 @@ declare namespace API {
   };
 
   type LoginResponse = {
-    token_id: string;
+    code?: number;
+    message?: string;
+    data?: LoginData;
+  };
+
+  type LoginError = {
+    code?: number;
+    message?: string;
+  };
+
+  type LoginData = {
+    token_id?: string;
   };
 
   type LogoutRequest = {
     token_id?: string;
+  };
+
+  type LogoutResponse = {
+    code?: number;
+    message?: string;
   };
 
   type DebtTokenList = {

@@ -19,19 +19,14 @@
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
+    path: '/poolManage',
+    icon: 'AlignRightOutlined',
+    name: 'pool manage',
+    component: './PoolManage',
   },
   {
     path: '/',
-    redirect: '/welcome',
-  },
-  {
-    path: '/poolManage',
-    name: 'pool manage',
-    component: './PoolManage',
+    redirect: '/poolManage',
   },
   {
     component: './404',

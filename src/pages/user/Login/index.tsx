@@ -3,8 +3,9 @@ import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { loginUser } from '@/services/pledge/api/user';
 import { PLEDGE_JWT_TOKEN } from '@/utils/constants';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
-import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
+import { get } from 'lodash';
 import React, { useState } from 'react';
 import { FormattedMessage, history, useIntl } from 'umi';
 import styles from './index.less';
@@ -23,7 +24,7 @@ const LoginMessage: React.FC<{
 );
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   // const { initialState, setInitialState } = useModel('@@initialState');
 
@@ -39,12 +40,12 @@ const Login: React.FC = () => {
   //   }
   // };
 
-  const handleSubmit = async (values: API.Login) => {
+  const handleSubmit = async (values: API.LoginRequest) => {
     try {
       // 登录
-      const data = await loginUser({ ...values });
-      if (data) {
-        localStorage.setItem(PLEDGE_JWT_TOKEN, data.token_id);
+      const response = await loginUser({ ...values });
+      if (response) {
+        localStorage.setItem(PLEDGE_JWT_TOKEN, get(response, ['data', 'token_id']));
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
@@ -58,9 +59,9 @@ const Login: React.FC = () => {
         history.push(redirect || '/');
         return;
       }
-      console.log(msg);
+      console.log('response');
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      // setUserLoginState('response');
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
@@ -118,10 +119,10 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <UserOutlined className={styles.prefixIcon} />,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.username.placeholder',
-                  defaultMessage: '用户名: admin or user',
-                })}
+                // placeholder={intl.formatMessage({
+                //   id: 'pages.login.username.placeholder',
+                //   defaultMessage: '用户名: admin or user',
+                // })}
                 rules={[
                   {
                     required: true,
@@ -140,10 +141,10 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined className={styles.prefixIcon} />,
                 }}
-                placeholder={intl.formatMessage({
-                  id: 'pages.login.password.placeholder',
-                  defaultMessage: '密码: ant.design',
-                })}
+                // placeholder={intl.formatMessage({
+                //   id: 'pages.login.password.placeholder',
+                //   defaultMessage: '密码: ant.design',
+                // })}
                 rules={[
                   {
                     required: true,
@@ -241,7 +242,7 @@ const Login: React.FC = () => {
               />
             </>
           )}
-          <div
+          {/* <div
             style={{
               marginBottom: 24,
             }}
@@ -256,7 +257,7 @@ const Login: React.FC = () => {
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
             </a>
-          </div>
+          </div> */}
         </LoginForm>
       </div>
       <Footer />

@@ -16,7 +16,7 @@ export async function loginUser(body: API.LoginRequest, options?: { [key: string
 
 /** Logs out current logged in user session POST /user/logout */
 export async function logoutUser(body: API.LogoutRequest, options?: { [key: string]: any }) {
-  return request<any>('/user/logout', {
+  return request<API.LogoutResponse>('/user/logout', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
