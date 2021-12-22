@@ -3,6 +3,6 @@ import { Request, Response } from 'express';
 
 export default {
   'POST /user/login': (req: Request, res: Response) => {
-    res.status(200).send({ token_id: '5d3cec3D-bB76-3518-0bFd-cFEdA4EDEc79' });
+    res.status(200).send({ token_id: '4bEEca15-A8EE-D16a-6F84-F09Be26294cB' });
   },
 };

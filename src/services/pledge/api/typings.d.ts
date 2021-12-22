@@ -8,6 +8,15 @@ declare namespace API {
     token_id: string;
   };
 
+  type TokenName = {
+    symbols?: Symbol[];
+  };
+
+  type Symbol = {
+    symbol?: string;
+    address?: string;
+  };
+
   type SearchResponse = {
     totalNum?: string;
     poolList?: PoolData[];
