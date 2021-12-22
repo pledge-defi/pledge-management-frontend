@@ -1,175 +1,124 @@
-import type { PoolBaseInfoResponse } from '@/contracts/PledgePool';
-import services from '@/services';
+import { getPoolByConditions } from '@/services/pledge/api/pool';
 import { FORMAT_TIME } from '@/utils/constants';
-import { getFieldsLabel, staticOptions } from '@/utils/staticOptions';
-import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Card, Form, Select, Space, Spin, Table } from 'antd';
-import type { ColumnsType } from 'antd/lib/table/interface.d';
-import { size } from 'lodash';
+import { getFieldsLabel } from '@/utils/staticOptions';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import { get } from 'lodash';
 import moment from 'moment';
 import numeral from 'numeral';
-import { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { useRef } from 'react';
 import ModalForm from './ModalForm';
 
-const FlexDiv = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const SpaceDiv = styled.div`
-  height: 20px;
-`;
-
-const columns: ColumnsType<any> = [
-  { title: 'ID', dataIndex: 'id', render: (_: any, __: any, i: number) => i },
+const columns: ProColumns<API.PoolData>[] = [
+  { title: 'ID', dataIndex: 'id', renderText: (_: any, __: any, i: number) => i, search: false },
   {
     title: 'pool',
     dataIndex: 'lendToken',
-    render: (t: string) => getFieldsLabel('lendToken', t),
+    renderText: (t: string) => getFieldsLabel('lendToken', t),
+    valueType: 'select',
+    valueEnum: {
+      all: { text: '全部', status: 'Default' },
+      open: {
+        text: '未解决',
+        status: 'Error',
+      },
+      closed: {
+        text: '已解决',
+        status: 'Success',
+        disabled: true,
+      },
+      processing: {
+        text: '解决中',
+        status: 'Processing',
+      },
+    },
   },
   {
     title: 'Underlying Asset',
     dataIndex: 'borrowToken',
-    render: (t: string) => getFieldsLabel('borrowToken', t),
+    renderText: (t: string) => getFieldsLabel('borrowToken', t),
+    search: false,
   },
   {
     title: 'supply rate %',
     dataIndex: 'interestRate',
-    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    renderText: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    search: false,
   },
   {
     title: 'borrow rate %',
     dataIndex: 'interestRate',
-    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    renderText: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    search: false,
   },
   {
     title: 'Total financing',
     dataIndex: 'maxSupply',
+    search: false,
+    renderText: (t) => t / Math.pow(10, 8),
   },
   {
     title: 'Settlement date',
     dataIndex: 'settleTime',
-    render: (t) => moment.unix(t).format(FORMAT_TIME),
+    renderText: (t) => moment.unix(t).format(FORMAT_TIME),
+    search: false,
   },
   {
     title: 'length',
     dataIndex: 'length',
-    render: (_, r) => {
-      return `${moment.unix(r.endTime).diff(moment.unix(r.settleTime), 'days')} 天`;
+    renderText: (_, r) => {
+      return `${moment
+        .unix(r.endTime as unknown as number)
+        .diff(moment.unix(r.settleTime as unknown as number), 'days')} 天`;
     },
+    search: false,
   },
   {
     title: 'Collateralization ratio %',
     dataIndex: 'martgageRate',
-    // render: (t: string) => {
-    //   return +t / Math.pow(10, 8);
-    // },
-    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    renderText: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    search: false,
   },
   {
     title: 'margin ratio %',
     dataIndex: 'autoLiquidateThreshold',
-    render: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    renderText: (t) => numeral(t / Math.pow(10, 8)).format('0%'),
+    search: false,
   },
   {
     title: 'state',
     dataIndex: 'state',
-    render: (t: string) => getFieldsLabel('state', t),
+    renderText: (t: string) => getFieldsLabel('state', t),
   },
-  { title: 'maturity time', dataIndex: '' },
+  { title: 'maturity time', dataIndex: '', search: false },
 ];
 
 export default () => {
-  const [poolBaseInfoResponse, setPoolBaseInfoResponse] = useState<PoolBaseInfoResponse[]>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [filterLendToken, setFilterLendToken] = useState<string>();
-  const [filterState, setfilterState] = useState<string>();
-
-  const fetchPoolBaseData = async () => {
-    setLoading(true);
-    const data = await services.evmServer.getPoolBaseData();
-    setLoading(false);
-    setPoolBaseInfoResponse(data);
-  };
-
-  const handleChangeLendToken = (v: string) => {
-    setFilterLendToken(v);
-  };
-
-  const handleChangeState = (v: string) => {
-    setfilterState(v);
-  };
-
+  const actionRef = useRef<ActionType>();
   const handleClickSearch = () => {
-    fetchPoolBaseData();
+    actionRef.current?.reload();
   };
-
-  const dataSource = useMemo(() => {
-    if (size(poolBaseInfoResponse)) {
-      return poolBaseInfoResponse
-        ?.filter((p) => {
-          if (!filterLendToken) {
-            return true;
-          }
-          return filterLendToken === p.lendToken;
-        })
-        .filter((p) => {
-          if (!filterState) {
-            return true;
-          }
-          return filterState === p.state;
-        });
-    }
-    return [];
-  }, [filterLendToken, filterState, poolBaseInfoResponse]);
-
-  useEffect(() => {
-    fetchPoolBaseData();
-  }, []);
-
   return (
-    <PageContainer>
-      <Spin spinning={loading}>
-        <Card>
-          <FlexDiv>
-            <ModalForm callback={handleClickSearch} />
-            <Space>
-              <Form.Item label={'pool'}>
-                <Select
-                  onChange={handleChangeLendToken}
-                  options={staticOptions.lendToken}
-                  style={{ width: '200px' }}
-                  allowClear
-                />
-              </Form.Item>
-              <Form.Item label="state">
-                <Select
-                  onChange={handleChangeState}
-                  options={staticOptions.state}
-                  style={{ width: '200px' }}
-                  allowClear
-                />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" onClick={handleClickSearch}>
-                  Search
-                </Button>
-              </Form.Item>
-            </Space>
-          </FlexDiv>
-        </Card>
-        <SpaceDiv />
-        <Card>
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={false}
-            scroll={{ x: 1300 }}
-          />
-        </Card>
-      </Spin>
-    </PageContainer>
+    <ProTable<API.PoolData>
+      columns={columns}
+      actionRef={actionRef}
+      scroll={{ x: 1300 }}
+      request={async (params = {}) => {
+        const p: API.getPoolByConditionsParams = {
+          poolID: get(params, 'lendToken'),
+          poolStatus: get(params, 'state'),
+          page: get(params, 'current'),
+          pageSize: get(params, 'pageSize'),
+        };
+        return getPoolByConditions(p).then(({ totalNum, poolList }) => {
+          return {
+            data: poolList,
+            success: true,
+            total: totalNum as unknown as number,
+          };
+        });
+      }}
+      toolBarRender={() => [<ModalForm callback={handleClickSearch} />]}
+    />
   );
 };

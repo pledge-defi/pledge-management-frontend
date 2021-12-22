@@ -86,7 +86,7 @@ export default ({ callback }: Props) => {
         moment(_settleTime).unix().toString(),
         moment(_endTime).unix().toString(),
         (_interestRate * Math.pow(10, 6)).toString(),
-        _maxSupply,
+        (_maxSupply * Math.pow(10, 8)).toString(),
         (_martgageRate * Math.pow(10, 6)).toString(),
         _lendToken,
         _borrowToken,
@@ -174,8 +174,6 @@ export default ({ callback }: Props) => {
           }}
           onFinish={handleFinishFirstStep}
         >
-          <ProFormText name="pledge_address" label={'pledge contract address'} />
-
           <ProFormText
             name="sp_name"
             label="SP_token name"
