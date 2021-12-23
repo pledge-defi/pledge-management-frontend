@@ -21,7 +21,7 @@
   {
     path: '/poolManage',
     icon: 'AlignRightOutlined',
-    name: 'pool manage',
+    name: 'Pool Manage',
     component: './PoolManage',
   },
   {

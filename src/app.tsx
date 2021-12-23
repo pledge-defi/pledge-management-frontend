@@ -65,7 +65,7 @@ export async function getInitialState(): Promise<{
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     logo: null,
-    title: 'Peldage',
+    title: 'Peldage-Management',
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {

@@ -164,18 +164,7 @@ export default ({ callback }: Props) => {
           );
         }}
       >
-        <StepsForm.StepForm
-          title={'create SP & JP token'}
-          onValuesChange={async ({ pledge_address }) => {
-            try {
-              await services.evmServer.getPrice(pledge_address);
-              await services.evmServer.getSymbol(pledge_address);
-            } catch (err: any) {
-              console.log(err);
-            }
-          }}
-          onFinish={handleFinishFirstStep}
-        >
+        <StepsForm.StepForm title={'create SP & JP token'} onFinish={handleFinishFirstStep}>
           <ProFormText
             name="sp_name"
             label="SP_token name"
