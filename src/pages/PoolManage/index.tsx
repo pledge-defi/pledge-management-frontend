@@ -1,4 +1,4 @@
-import { debtTokenList, getPoolByConditions } from '@/services/pledge/api/pool';
+import { debtTokenList, getPoolByConditions, PoolList } from '@/services/pledge/api/pool';
 import { FORMAT_TIME } from '@/utils/constants';
 import { dealNumber_18, dealNumber_8 } from '@/utils/public';
 import { getFieldsLabel } from '@/utils/staticOptions';
@@ -24,7 +24,8 @@ export default () => {
     setPoolValueEnum(newPoolValueEnum);
   };
 
-  const handleClickSearch = () => {
+  const handleClickSearch = async () => {
+    await PoolList();
     actionRef.current?.reload();
   };
 

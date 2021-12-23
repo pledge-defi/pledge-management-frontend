@@ -24,3 +24,11 @@ export async function getPoolByConditions(
     ...(options || {}),
   });
 }
+
+/** Notice Server to get pool list POST /pool/poolList */
+export async function PoolList(options?: { [key: string]: any }) {
+  return request<any>('/pool/poolList', {
+    method: 'POST',
+    ...(options || {}),
+  });
+}

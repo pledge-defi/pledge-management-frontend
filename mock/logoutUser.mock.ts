@@ -3,6 +3,6 @@ import { Request, Response } from 'express';
 
 export default {
   'POST /user/logout': (req: Request, res: Response) => {
-    res.status(200).send({ code: 92, message: '至方料月酸少矿前与会果持上速。' });
+    res.status(200).send({ code: 66, message: '次去复节回开号族铁影日打会。' });
   },
 };
