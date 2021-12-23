@@ -82,8 +82,8 @@ const request = extend({
 // request interceptor, change url or options.
 request.interceptors.request.use((url, options) => {
   const { headers } = options;
-  const AuthCode = localStorage.getItem(PLEDGE_TOKEN) || undefined;
-  const newHeaders = AuthCode ? { ...headers, AuthCode } : headers;
+  const authCode = localStorage.getItem(PLEDGE_TOKEN) || undefined;
+  const newHeaders = authCode ? { ...headers, authCode } : headers;
   return {
     url: url,
     options: {
