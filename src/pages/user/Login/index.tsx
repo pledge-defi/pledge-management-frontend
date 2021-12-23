@@ -1,7 +1,7 @@
 import Footer from '@/components/Footer';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { loginUser } from '@/services/pledge/api/user';
-import { PLEDGE_JWT_TOKEN } from '@/utils/constants';
+import { PLEDGE_TOKEN } from '@/utils/constants';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       // 登录
       const response = await loginUser({ ...values });
       if (response) {
-        localStorage.setItem(PLEDGE_JWT_TOKEN, get(response, ['data', 'token_id']));
+        localStorage.setItem(PLEDGE_TOKEN, get(response, ['data', 'token_id']));
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',

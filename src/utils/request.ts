@@ -5,7 +5,7 @@
 import { extend } from 'umi-request';
 import { message, notification } from 'antd';
 import type { ResponseError } from 'umi-request';
-import { PLEDGE_JWT_TOKEN } from './constants';
+import { PLEDGE_TOKEN } from './constants';
 import { history } from 'umi';
 
 const codeMessage = {
@@ -48,7 +48,7 @@ const errorHandler = (error: ResponseError | { response: Response }) => {
               return reject();
             }
             if (status === 401) {
-              localStorage.removeItem(PLEDGE_JWT_TOKEN);
+              localStorage.removeItem(PLEDGE_TOKEN);
               if (window.location.pathname !== '/users/login') {
                 history.replace('/user/login');
               }
@@ -82,16 +82,13 @@ const request = extend({
 // request interceptor, change url or options.
 request.interceptors.request.use((url, options) => {
   const { headers } = options;
-  const jwt_token = localStorage.getItem(PLEDGE_JWT_TOKEN);
-  const temp: Record<string, any> = {};
-  if (jwt_token) {
-    temp.authorization = 'Bearer ' + jwt_token;
-  }
+  const AuthCode = localStorage.getItem(PLEDGE_TOKEN) || undefined;
+  const newHeaders = AuthCode ? { ...headers, AuthCode } : headers;
   return {
     url: url,
     options: {
       ...options,
-      headers: { ...headers, ...temp },
+      headers: newHeaders,
     },
   };
 });

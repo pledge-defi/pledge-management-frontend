@@ -1,5 +1,5 @@
 import { logoutUser } from '@/services/pledge/api/user';
-import { PLEDGE_JWT_TOKEN } from '@/utils/constants';
+import { PLEDGE_TOKEN } from '@/utils/constants';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import { stringify } from 'querystring';
@@ -18,7 +18,7 @@ export type GlobalHeaderRightProps = {
  */
 const loginOut = async () => {
   await logoutUser();
-  localStorage.removeItem(PLEDGE_JWT_TOKEN);
+  localStorage.removeItem(PLEDGE_TOKEN);
   const { query = {}, search, pathname } = history.location;
   const { redirect } = query;
   // Note: There may be security issues, please note
