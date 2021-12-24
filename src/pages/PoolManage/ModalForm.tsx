@@ -1,5 +1,5 @@
 import services from '@/services';
-import { PLEDGE_ADDRESS } from '@/utils/constants';
+import { BNB_ADDRESS, PLEDGE_ADDRESS } from '@/utils/constants';
 import { dealNumber } from '@/utils/public';
 import { PlusOutlined } from '@ant-design/icons';
 import {
@@ -109,6 +109,9 @@ export default ({ callback }: Props) => {
   const searchContractDetail = async (v: string | undefined) => {
     // 0xDc6dF65b2fA0322394a8af628Ad25Be7D7F413c2
     const value = v?.trim();
+    if (v === BNB_ADDRESS) {
+      return [{ label: 'BNB', value: BNB_ADDRESS }];
+    }
     if (value) {
       setLoading(true);
       try {
@@ -146,7 +149,6 @@ export default ({ callback }: Props) => {
         Create pool
       </Button>
       <StepsForm
-        // current={2}
         submitter={{ resetButtonProps: { style: { display: 'none' } } }}
         onFinish={handleFinishThirdStep}
         stepsFormRender={(dom, submitter) => {
