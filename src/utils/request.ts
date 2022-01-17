@@ -76,7 +76,7 @@ const errorHandler = (error: ResponseError | { response: Response }) => {
 const request = extend({
   errorHandler, // 默认错误处理
   // credentials: 'include', // 默认请求是否带上cookie
-  prefix: '/api/v2',
+  prefix: 'http://54.214.220.181:7005/api/v2',
 });
 
 // request interceptor, change url or options.
