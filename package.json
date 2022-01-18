@@ -6,7 +6,8 @@
   "scripts": {
     "web3-token-abi": "node ./config/web3TokenAbi.js",
     "analyze": "cross-env ANALYZE=1 umi build",
-    "build": "umi build",
+    "build": "cross-env REACT_APP_ENV=dev umi build",
+    "build:pre": "cross-env REACT_APP_ENV=pre umi build",
     "deploy": "node ./config/deployTest.js",
     "dev": "npm run start:dev",
     "gh-pages": "gh-pages -d dist",
@@ -97,7 +98,7 @@
     "@umijs/yorkie": "^2.0.3",
     "aws-s3": "^2.0.5",
     "carlo": "^0.9.46",
-    "cross-env": "^7.0.0",
+    "cross-env": "^7.0.3",
     "cross-port-killer": "^1.1.1",
     "detect-installer": "^1.0.1",
     "enzyme": "^3.11.0",
