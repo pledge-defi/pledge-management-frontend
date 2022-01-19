@@ -1,5 +1,5 @@
 import { byteCode } from '@/abis/deployCode';
-import type { AddEthereumChainParameter, BridgeConfigSimple } from '@/constants/ChainBridge.d';
+import type { AddEthereumChainParameter } from '@/constants/ChainBridge.d';
 import type { PledgePool } from '@/contracts/PledgePool';
 import { ORACLE_ADDRESS, PLEDGE_ADDRESS } from '@/utils/constants';
 import {
@@ -7,7 +7,6 @@ import {
   getBscPledgeOracleAbiContract,
   getDebtTokenContract,
   getPledgePoolContract,
-  web3,
 } from './web3';
 
 export type CreatePoolRequestParams = Parameters<PledgePool['createPoolInfo']>;
@@ -52,23 +51,26 @@ const MetacoreServer = {
     return await contract.deploy({ data: byteCode, arguments: [name, symbol] }).send(options);
   },
 
-  async switchNetwork(value: BridgeConfigSimple) {
-    return await window.ethereum.request({
-      method: 'wallet_addEthereumChain',
-      params: [
-        {
-          chainId: web3.utils.toHex(value.networkId),
-          chainName: value.name,
-          nativeCurrency: {
-            name: value.nativeTokenSymbol,
-            symbol: value.nativeTokenSymbol,
-            decimals: value.decimals,
-          },
-          rpcUrls: [value.rpcUrl],
-          blockExplorerUrls: [value.explorerUrl],
-        } as AddEthereumChainParameter,
-      ],
-    });
+  async switchNetwork(value: AddEthereumChainParameter) {
+    try {
+      return await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: value.chainId }],
+      });
+    } catch (switchError: any) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        try {
+          return await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [value],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
   },
 };
 

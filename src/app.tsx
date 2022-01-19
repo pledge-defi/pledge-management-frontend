@@ -7,6 +7,7 @@ import { Web3ReactProvider } from '@web3-react/core';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { RecoilRoot } from 'recoil';
 
 const loginPath = '/user/login';
 
@@ -17,7 +18,11 @@ function getLibrary(provider: any) {
 }
 
 export function rootContainer(container: any) {
-  return <Web3ReactProvider getLibrary={getLibrary}>{container}</Web3ReactProvider>;
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <RecoilRoot>{container}</RecoilRoot>
+    </Web3ReactProvider>
+  );
 }
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
