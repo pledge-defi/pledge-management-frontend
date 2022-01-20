@@ -17,3 +17,8 @@ export const balanceState = atom<BalanceType>({
     Ethereum: '',
   },
 });
+
+export const globalTokenState = atom<Global.Option[]>({
+  key: 'globalTokenState',
+  default: [],
+});
