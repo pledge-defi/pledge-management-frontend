@@ -38,8 +38,7 @@ export default () => {
     return [
       {
         title: 'ID',
-        dataIndex: 'id',
-        renderText: (_: any, __: any, i: number) => i,
+        dataIndex: 'pool_id',
         search: false,
       },
       {
@@ -114,7 +113,12 @@ export default () => {
           '5': { text: 'UNDONE' },
         },
       },
-      { title: 'maturity time', dataIndex: '', search: false },
+      {
+        title: 'maturity time',
+        dataIndex: 'endTime',
+        renderText: (t) => moment.unix(t).format(FORMAT_TIME),
+        search: false,
+      },
     ];
   }, [globalToken, poolValueEnum]);
 
@@ -130,13 +134,17 @@ export default () => {
     forEach(uniqueTokens, (u) => {
       promiseAll.push(services.evmServer.getSymbol(u!));
     });
-    Promise.all(promiseAll).then((res) => {
-      const tokenOptions: Global.Option[] = [];
-      forEach(uniqueTokens, (u, index) => {
-        tokenOptions.push({ label: get(res, [index]), value: u });
+    Promise.all(promiseAll)
+      .then((res) => {
+        const tokenOptions: Global.Option[] = [];
+        forEach(uniqueTokens, (u, index) => {
+          tokenOptions.push({ label: get(res, [index]), value: u });
+        });
+        setGlobalToken(tokenOptions);
+      })
+      .catch((e) => {
+        console.log(e);
       });
-      setGlobalToken(tokenOptions);
-    });
   };
 
   useEffect(() => {
