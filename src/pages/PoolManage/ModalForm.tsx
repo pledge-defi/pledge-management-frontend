@@ -1,5 +1,8 @@
+import type { ChainInfo } from '@/constants/chainInfos';
+import chainInfos from '@/constants/chainInfos';
+import { chainInfoKeyState } from '@/model/global';
 import services from '@/services';
-import { BNB_ADDRESS, PLEDGE_ADDRESS } from '@/utils/constants';
+import { BNB_ADDRESS } from '@/utils/constants';
 import { dealNumber } from '@/utils/public';
 import { PlusOutlined } from '@ant-design/icons';
 import {
@@ -11,9 +14,10 @@ import {
 } from '@ant-design/pro-form';
 import type { SelectProps } from 'antd';
 import { Button, Form, message, Modal } from 'antd';
-import { get } from 'lodash';
+import { find, get } from 'lodash';
 import moment from 'moment';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 const validator = async (_: any, value: string) => {
   if (value && value.length > 11) {
@@ -27,12 +31,17 @@ type Props = {
 };
 
 export default ({ callback }: Props) => {
+  const chainInfoKey = useRecoilValue(chainInfoKeyState);
   const [visible, setVisible] = useState<boolean>(false);
   const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
   const [borrowTokenOption, setBorrowTokenOption] = useState<SelectProps<any>['options']>();
   const [loading, setLoading] = useState<boolean>(false);
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
+  const { PLEDGE_ADDRESS, ORACLE_ADDRESS } = useMemo(
+    () => find(chainInfos, { chainName: chainInfoKey }) as unknown as ChainInfo,
+    [chainInfoKey],
+  );
 
   const handleFinishFirstStep = async ({ sp_name, _spToken, jp_name, _jpToken }: any) => {
     // 部署合约
@@ -115,7 +124,7 @@ export default ({ callback }: Props) => {
     if (value) {
       setLoading(true);
       try {
-        const price = await services.evmServer.getPrice(value);
+        const price = await services.evmServer.getPrice(value, ORACLE_ADDRESS);
         if (price) {
           const symbol = await services.evmServer.getSymbol(value);
           if (symbol) {
