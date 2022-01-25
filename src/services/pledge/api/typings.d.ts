@@ -50,10 +50,15 @@ declare namespace API {
   };
 
   type SearchRequest = {
+    chainID?: number;
     poolID?: number;
     state?: string;
     page?: number;
     pageSize?: number;
+  };
+
+  type PoolListRequest = {
+    chainID?: number;
   };
 
   type SearchResponse = {

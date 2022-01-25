@@ -158,7 +158,17 @@
         "description": "",
         "operationId": "PoolList",
         "produces": ["application/xml", "application/json"],
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "description": "bsc chain id. 56->maninnet ; 97->testnet",
+            "schema": {
+              "$ref": "#/definitions/PoolListRequest"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "successful operation"
@@ -288,6 +298,9 @@
     "SearchRequest": {
       "type": "object",
       "properties": {
+        "chainID": {
+          "type": "string"
+        },
         "poolID": {
           "type": "integer"
         },
@@ -301,6 +314,14 @@
         "pageSize": {
           "type": "integer",
           "default": "10"
+        }
+      }
+    },
+    "PoolListRequest": {
+      "type": "object",
+      "properties": {
+        "chainID": {
+          "type": "string"
         }
       }
     },

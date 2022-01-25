@@ -26,9 +26,13 @@ export async function getPoolByConditions(
 }
 
 /** Notice Server to get pool list POST /pool/poolList */
-export async function PoolList(options?: { [key: string]: any }) {
+export async function PoolList(body: API.PoolListRequest, options?: { [key: string]: any }) {
   return request<any>('/pool/poolList', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }

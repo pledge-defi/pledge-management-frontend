@@ -1,23 +1,27 @@
-import { globalTokenState } from '@/model/global';
+import chainInfos from '@/constants/chainInfos';
+import { chainInfoKeyState, globalTokenState } from '@/model/global';
 import services from '@/services';
 import { debtTokenList, getPoolByConditions, PoolList } from '@/services/pledge/api/pool';
 import { FORMAT_TIME } from '@/utils/constants';
 import { dealNumber_18, dealNumber_8 } from '@/utils/public';
-import { getFieldsLabel } from '@/utils/staticOptions';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { find, forEach, get, set, size } from 'lodash';
+import { filter, find, forEach, get, set, size, some } from 'lodash';
 import moment from 'moment';
 import numeral from 'numeral';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import ModalForm from './ModalForm';
 
 export default () => {
   const actionRef = useRef<ActionType>();
   const [poolValueEnum, setPoolValueEnum] = useState<Record<string, any>>();
   const [globalToken, setGlobalToken] = useRecoilState(globalTokenState);
-  console.log(globalToken);
+  const chainInfoKey = useRecoilValue(chainInfoKeyState);
+  const chainID = useMemo(
+    () => find(chainInfos, { chainName: chainInfoKey })?.chainId,
+    [chainInfoKey],
+  );
 
   const fetchPoolList = async () => {
     const response = await debtTokenList();
@@ -30,7 +34,7 @@ export default () => {
   };
 
   const handleClickSearch = async () => {
-    await PoolList();
+    await PoolList({ chainID });
     actionRef.current?.reload();
   };
 
@@ -103,14 +107,13 @@ export default () => {
       {
         title: 'state',
         dataIndex: 'state',
-        renderText: (t: string) => getFieldsLabel('state', t),
         valueType: 'select',
         valueEnum: {
           '0': { text: 'MATCH' },
-          '2': { text: 'EXECUTION' },
-          '3': { text: 'FINISH' },
-          '4': { text: 'LIQUIDATION' },
-          '5': { text: 'UNDONE' },
+          '1': { text: 'EXECUTION' },
+          '2': { text: 'FINISH' },
+          '3': { text: 'LIQUIDATION' },
+          '4': { text: 'UNDONE' },
         },
       },
       {
@@ -130,22 +133,30 @@ export default () => {
       tokens.push(d.borrowToken);
     });
     const uniqueTokens = Array.from(new Set(tokens));
+    const needAdduniqueTokens = filter(
+      uniqueTokens,
+      (u) => !some(globalToken, (g) => g.value === u),
+    );
     const promiseAll: any[] = [];
-    forEach(uniqueTokens, (u) => {
+    forEach(needAdduniqueTokens, (u) => {
       promiseAll.push(services.evmServer.getSymbol(u!));
     });
     Promise.all(promiseAll)
       .then((res) => {
         const tokenOptions: Global.Option[] = [];
-        forEach(uniqueTokens, (u, index) => {
+        forEach(needAdduniqueTokens, (u, index) => {
           tokenOptions.push({ label: get(res, [index]), value: u });
         });
-        setGlobalToken(tokenOptions);
+        setGlobalToken([...globalToken, ...tokenOptions]);
       })
       .catch((e) => {
         console.log(e);
       });
   };
+
+  useEffect(() => {
+    actionRef.current?.reload();
+  }, [chainInfoKey]);
 
   useEffect(() => {
     fetchPoolList();
@@ -158,6 +169,7 @@ export default () => {
       scroll={{ x: 1300 }}
       request={async (params = {}) => {
         const p: API.SearchRequest = {
+          chainID,
           poolID: get(params, 'lendToken'),
           state: get(params, 'state'),
           page: get(params, 'current'),
