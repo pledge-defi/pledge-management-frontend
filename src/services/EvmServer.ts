@@ -5,6 +5,7 @@ import {
   gasOptions,
   getBscPledgeOracleAbiContract,
   getDebtTokenContract,
+  getMultiSignatureContract,
   getPledgePoolContract,
 } from './web3';
 
@@ -37,6 +38,28 @@ const MetacoreServer = {
     const contract = getDebtTokenContract();
     const options = await gasOptions();
     return await contract.deploy({ data: byteCode, arguments: [name, symbol] }).send(options);
+  },
+
+  async createApplication(multiSignatureaddress: string, address: string) {
+    const contract = getMultiSignatureContract(multiSignatureaddress);
+    const options = await gasOptions();
+    return await contract.methods.createApplication(address).send(options);
+  },
+
+  async getApplicationHash(from: string, to: string, multiSignatureaddress: string) {
+    const contract = getMultiSignatureContract(multiSignatureaddress);
+    return await contract.methods.getApplicationHash(from, to).call();
+  },
+
+  async getValidSignature(hash: string, multiSignatureaddress: string) {
+    const contract = getMultiSignatureContract(multiSignatureaddress);
+    return await contract.methods.getValidSignature(hash, '0').call();
+  },
+
+  async signApplication(hash: string, multiSignatureaddress: string) {
+    const contract = getMultiSignatureContract(multiSignatureaddress);
+    const options = await gasOptions();
+    return await contract.methods.signApplication(hash).send(options);
   },
 
   async switchNetwork(value: AddEthereumChainParameter) {

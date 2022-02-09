@@ -1,7 +1,8 @@
 import type { AddressPrivileges } from '@/contracts/AddressPrivileges';
 import type { BscPledgeOracle } from '@/contracts/BscPledgeOracle';
-import type { PledgePool } from '@/contracts/PledgePool';
 import type { DebtToken } from '@/contracts/DebtToken';
+import type { MultiSignature } from '@/contracts/multiSignature';
+import type { PledgePool } from '@/contracts/PledgePool';
 import { ethers } from 'ethers';
 import Web3 from 'web3';
 import type { Contract } from 'web3-eth-contract';
@@ -10,6 +11,7 @@ const AddressPrivilegesAbi = require('@/abis/AddressPrivileges.json');
 const BscPledgeOracleAbi = require('@/abis/BscPledgeOracle.json');
 const DebtTokenAbi = require('@/abis/DebtToken.json');
 const PledgePoolAbi = require('@/abis/PledgePool.json');
+const MultiSignatureAbi = require('@/abis/multiSignature.json');
 
 const web3 = new Web3(Web3.givenProvider);
 interface SubContract<T> extends Contract {
@@ -35,6 +37,12 @@ const getDebtTokenContract = (address?: string) => {
 const getPledgePoolContract = (address: string) => {
   return new web3.eth.Contract(PledgePoolAbi, address) as {
     methods: PledgePool;
+  };
+};
+
+const getMultiSignatureContract = (address: string) => {
+  return new web3.eth.Contract(MultiSignatureAbi, address) as {
+    methods: MultiSignature;
   };
 };
 
@@ -81,4 +89,5 @@ export {
   gasOptions,
   getDefaultAccount,
   createERCDepositData,
+  getMultiSignatureContract,
 };

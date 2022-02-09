@@ -12,11 +12,12 @@ import {
   ProFormText,
   StepsForm,
 } from '@ant-design/pro-form';
+import { useWeb3React } from '@web3-react/core';
 import type { SelectProps } from 'antd';
 import { Button, Form, message, Modal } from 'antd';
 import { find, get } from 'lodash';
 import moment from 'moment';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const validator = async (_: any, value: string) => {
@@ -36,14 +37,23 @@ export default ({ callback }: Props) => {
   const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
   const [borrowTokenOption, setBorrowTokenOption] = useState<SelectProps<any>['options']>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [current, setCurrent] = useState<number>();
+  const [authorizedStatus, setAuthorizedStatus] = useState<boolean>(false);
+  const { account } = useWeb3React();
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
-  const { PLEDGE_ADDRESS, ORACLE_ADDRESS } = useMemo(
+  const [formStep4] = Form.useForm();
+  const [formStep5] = Form.useForm();
+  const { PLEDGE_ADDRESS, ORACLE_ADDRESS, MULTISIGNATURE_ADDRESS } = useMemo(
     () => find(chainInfos, { chainName: chainInfoKey }) as unknown as ChainInfo,
     [chainInfoKey],
   );
 
-  const handleFinishFirstStep = async ({ sp_name, _spToken, jp_name, _jpToken }: any) => {
+  const handleCurrentChange = (v: number) => {
+    setCurrent(v);
+  };
+
+  const handleFinishCreateSPJPToken = async ({ sp_name, _spToken, jp_name, _jpToken }: any) => {
     // 部署合约
     try {
       const sp_contract = await services.evmServer.deployContract(sp_name, _spToken);
@@ -52,12 +62,26 @@ export default ({ callback }: Props) => {
       formStep2.setFieldsValue({
         sp_address: get(sp_contract, '_address'),
         jp_address: get(jp_contract, '_address'),
+        multisignature_address: MULTISIGNATURE_ADDRESS,
+      });
+
+      formStep3.setFieldsValue({
+        sp_address: get(sp_contract, '_address'),
+        jp_address: get(jp_contract, '_address'),
+        multi_signature_account: account,
+      });
+
+      formStep4.setFieldsValue({
+        sp_address: get(sp_contract, '_address'),
+        jp_address: get(jp_contract, '_address'),
         pledge_address: PLEDGE_ADDRESS,
       });
-      formStep3.setFieldsValue({
+
+      formStep5.setFieldsValue({
         _spToken,
         _jpToken,
       });
+
       return true;
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -65,7 +89,34 @@ export default ({ callback }: Props) => {
     }
   };
 
-  const handleFinishSecondStep = async ({ sp_address, jp_address }: any) => {
+  const handleFinishBindMultiSignature = async () => {
+    // 绑定多签合约
+    try {
+      await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, PLEDGE_ADDRESS);
+      return true;
+    } catch (err: unknown) {
+      console.error('deployContract', err);
+      return false;
+    }
+  };
+
+  const handleClickAuthorized = async () => {
+    // 多签授权
+    try {
+      const hash = await services.evmServer.getApplicationHash(
+        MULTISIGNATURE_ADDRESS,
+        PLEDGE_ADDRESS,
+        MULTISIGNATURE_ADDRESS,
+      );
+      await services.evmServer.signApplication(hash, MULTISIGNATURE_ADDRESS);
+      return true;
+    } catch (err: unknown) {
+      console.error('deployContract', err);
+      return false;
+    }
+  };
+
+  const handleFinishAddAdmin = async ({ sp_address, jp_address }: any) => {
     // 添加管理员
     try {
       await services.evmServer.addMinter(sp_address, PLEDGE_ADDRESS);
@@ -77,7 +128,7 @@ export default ({ callback }: Props) => {
     }
   };
 
-  const handleFinishThirdStep = async ({
+  const handleFinishCreatePool = async ({
     _settleTime,
     _endTime,
     _interestRate,
@@ -152,19 +203,53 @@ export default ({ callback }: Props) => {
     setBorrowTokenOption(value);
   };
 
+  const verifyAuthorizedStatus = async () => {
+    // 验证多签状态
+    try {
+      const hash = await services.evmServer.getApplicationHash(
+        MULTISIGNATURE_ADDRESS,
+        PLEDGE_ADDRESS,
+        MULTISIGNATURE_ADDRESS,
+      );
+      const result = await services.evmServer.getValidSignature(hash, MULTISIGNATURE_ADDRESS);
+      setAuthorizedStatus(result === '1');
+    } catch (err: unknown) {
+      console.error('verifyAuthorizedStatus', err);
+    }
+  };
+
+  const submitButtonDisabled = useMemo(() => {
+    if (current === 2) {
+      return !authorizedStatus;
+    }
+    return false;
+  }, [authorizedStatus, current]);
+
+  useEffect(() => {
+    if (current === 2) {
+      verifyAuthorizedStatus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current]);
+
   return (
     <>
       <Button key="button" icon={<PlusOutlined />} type="primary" onClick={() => setVisible(true)}>
         Create pool
       </Button>
       <StepsForm
-        submitter={{ resetButtonProps: { style: { display: 'none' } } }}
-        onFinish={handleFinishThirdStep}
+        current={current}
+        onCurrentChange={handleCurrentChange}
+        submitter={{
+          resetButtonProps: { style: { display: 'none' } },
+          submitButtonProps: { disabled: submitButtonDisabled },
+        }}
+        onFinish={handleFinishCreatePool}
         stepsFormRender={(dom, submitter) => {
           return (
             <Modal
               title="Create Pool"
-              width={800}
+              width={1200}
               onCancel={() => setVisible(false)}
               visible={visible}
               footer={submitter}
@@ -175,7 +260,7 @@ export default ({ callback }: Props) => {
           );
         }}
       >
-        <StepsForm.StepForm title={'create SP & JP token'} onFinish={handleFinishFirstStep}>
+        <StepsForm.StepForm title={'create SP & JP token'} onFinish={handleFinishCreateSPJPToken}>
           <ProFormText
             name="sp_name"
             label="SP_token name"
@@ -214,19 +299,47 @@ export default ({ callback }: Props) => {
           />
         </StepsForm.StepForm>
         <StepsForm.StepForm
-          name="id"
-          title={'SP & JP token Authorization'}
-          onFinish={handleFinishSecondStep}
+          title={'SP & JP token bind the Multi-signature Authorization'}
+          onFinish={handleFinishBindMultiSignature}
           form={formStep2}
+        >
+          <ProFormText name="sp_address" label={'SP_token contract address'} disabled />
+          <ProFormText name="jp_address" label={'JP_token contract address'} disabled />
+          <ProFormText
+            name="multisignature_address"
+            label={'Multi-signature contract address'}
+            disabled
+          />
+        </StepsForm.StepForm>
+        <StepsForm.StepForm
+          title={'Authorized multi-signature accounts'}
+          onFinish={handleFinishBindMultiSignature}
+          form={formStep3}
+          stepProps={{ disabled: true }}
+        >
+          <ProFormText
+            name="multi_signature_account"
+            label={'Currently Multi-signature account'}
+            disabled
+          />
+          <ProFormText name="sp_address" label={'SP_token contract address'} disabled />
+          <ProFormText name="jp_address" label={'JP_token contract address'} disabled />
+          <Button type="primary" onClick={handleClickAuthorized}>
+            Authorized
+          </Button>
+        </StepsForm.StepForm>
+        <StepsForm.StepForm
+          title={'SP & JP token Authorization'}
+          onFinish={handleFinishAddAdmin}
+          form={formStep4}
         >
           <ProFormText name="sp_address" label={'SP_token contract address'} disabled />
           <ProFormText name="jp_address" label={'JP_token contract address'} disabled />
           <ProFormText name="pledge_address" label={'pledge contract address'} disabled />
         </StepsForm.StepForm>
-        <StepsForm.StepForm title={'create pool'} form={formStep3}>
+        <StepsForm.StepForm title={'create pool'} form={formStep5}>
           <ProFormText name="_spToken" label="SP_token symbol" disabled />
           <ProFormText name="_jpToken" label="JP_token symbol" disabled />
-
           <ProFormSelect
             name="_lendToken"
             label="pool"

@@ -12,6 +12,7 @@ export type ChainInfo = {
   netWorkInfo: AddEthereumChainParameter;
   PLEDGE_ADDRESS: string;
   ORACLE_ADDRESS: string;
+  MULTISIGNATURE_ADDRESS: string;
 };
 
 const chainInfos = [
@@ -22,8 +23,9 @@ const chainInfos = [
     currencyImageAsset: require('@/assets/images/PLGR.svg'),
     chainId: 97,
     symbol: 'tBNB',
-    PLEDGE_ADDRESS: '0xb996788A2471f34ad301dD5090d85521Da252ED4',
-    ORACLE_ADDRESS: '0xd96DBDC193617A0cD4bbf38E78a0fB4799A8E554',
+    PLEDGE_ADDRESS: '0x25d9226292c8B5dfdadAcD97B1A54981D680D311',
+    ORACLE_ADDRESS: '0x272aCa56637FDaBb2064f19d64BC3dE64A85A1b2',
+    MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
     netWorkInfo: {
       chainId: web3.utils.toHex(97),
       chainName: 'Binance Smart Chain Testnet',
@@ -45,6 +47,7 @@ const chainInfos = [
     symbol: 'BNB',
     PLEDGE_ADDRESS: '0x78CE5055149Dc30755612209f9d9A98f36fb022E',
     ORACLE_ADDRESS: '0x6cc2B5D12aD1Cc66149F2fb895ca863e9aEbD31e',
+    MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
     netWorkInfo: {
       chainId: web3.utils.toHex(56),
       chainName: 'Smart Chain',

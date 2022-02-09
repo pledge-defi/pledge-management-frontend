@@ -52,22 +52,15 @@ export interface MethodConstantReturnContext<TCallReturn> {
 export type MethodReturnContext = MethodPayableReturnContext;
 
 export type ContractContext = Web3ContractContext<
-  AddressPrivileges,
-  AddressPrivilegesMethodNames,
-  AddressPrivilegesEventsContext,
-  AddressPrivilegesEvents
+  MultiSignatureClient,
+  MultiSignatureClientMethodNames,
+  MultiSignatureClientEventsContext,
+  MultiSignatureClientEvents
 >;
-export type AddressPrivilegesEvents = undefined;
-export interface AddressPrivilegesEventsContext {}
-export type AddressPrivilegesMethodNames =
-  | 'new'
-  | 'addMinter'
-  | 'delMinter'
-  | 'getMinter'
-  | 'getMinterLength'
-  | 'getMultiSignatureAddress'
-  | 'isMinter';
-export interface AddressPrivileges {
+export type MultiSignatureClientEvents = undefined;
+export interface MultiSignatureClientEventsContext {}
+export type MultiSignatureClientMethodNames = 'new' | 'getMultiSignatureAddress';
+export interface MultiSignatureClient {
   /**
    * Payable: false
    * Constant: false
@@ -78,48 +71,9 @@ export interface AddressPrivileges {
   new: (multiSignature: string) => MethodReturnContext;
   /**
    * Payable: false
-   * Constant: false
-   * StateMutability: nonpayable
-   * Type: function
-   * @param _addMinter Type: address, Indexed: false
-   */
-  addMinter: (_addMinter: string) => MethodReturnContext;
-  /**
-   * Payable: false
-   * Constant: false
-   * StateMutability: nonpayable
-   * Type: function
-   * @param _delMinter Type: address, Indexed: false
-   */
-  delMinter: (_delMinter: string) => MethodReturnContext;
-  /**
-   * Payable: false
-   * Constant: true
-   * StateMutability: view
-   * Type: function
-   * @param _index Type: uint256, Indexed: false
-   */
-  getMinter: (_index: string) => MethodConstantReturnContext<string>;
-  /**
-   * Payable: false
-   * Constant: true
-   * StateMutability: view
-   * Type: function
-   */
-  getMinterLength: () => MethodConstantReturnContext<string>;
-  /**
-   * Payable: false
    * Constant: true
    * StateMutability: view
    * Type: function
    */
   getMultiSignatureAddress: () => MethodConstantReturnContext<string>;
-  /**
-   * Payable: false
-   * Constant: true
-   * StateMutability: view
-   * Type: function
-   * @param account Type: address, Indexed: false
-   */
-  isMinter: (account: string) => MethodConstantReturnContext<boolean>;
 }
