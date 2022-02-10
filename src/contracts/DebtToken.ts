@@ -1,10 +1,10 @@
-import type BN from 'bn.js';
 import type BigNumber from 'bignumber.js';
+import type BN from 'bn.js';
 import type {
+  EventData,
+  EventResponse,
   PromiEvent,
   TransactionReceipt,
-  EventResponse,
-  EventData,
   Web3ContractContext,
 } from 'ethereum-abi-types-generator';
 

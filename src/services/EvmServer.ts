@@ -34,10 +34,12 @@ const MetacoreServer = {
     return await contract.methods.addMinter(_addMinter).send(options);
   },
 
-  async deployContract(name: string, symbol: string) {
+  async deployContract(name: string, symbol: string, address: string) {
     const contract = getDebtTokenContract();
     const options = await gasOptions();
-    return await contract.deploy({ data: byteCode, arguments: [name, symbol] }).send(options);
+    return await contract
+      .deploy({ data: byteCode, arguments: [name, symbol, address] })
+      .send(options);
   },
 
   async createApplication(multiSignatureaddress: string, address: string) {

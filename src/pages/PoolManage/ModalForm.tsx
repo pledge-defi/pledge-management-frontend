@@ -39,12 +39,24 @@ export default ({ callback }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [current, setCurrent] = useState<number>();
   const [authorizedStatus, setAuthorizedStatus] = useState<boolean>(false);
+  const [authorizedloading, setAuthorizedloading] = useState<boolean>(false);
+  const [initialValues, setInitialValues] = useState<{
+    sp_name?: string;
+    _spToken?: string;
+    jp_name?: string;
+    _jpToken?: string;
+    sp_address?: string;
+    jp_address?: string;
+    spHash?: string;
+    jpHash?: string;
+    multi_sign_account?: (string | null | undefined)[];
+  }>({});
   const { account } = useWeb3React();
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
   const [formStep4] = Form.useForm();
   const [formStep5] = Form.useForm();
-  const { PLEDGE_ADDRESS, ORACLE_ADDRESS, MULTISIGNATURE_ADDRESS } = useMemo(
+  const { PLEDGE_ADDRESS, ORACLE_ADDRESS, MULTISIGNATURE_ADDRESS, DEPLOYMENT_ACCOUNT } = useMemo(
     () => find(chainInfos, { chainName: chainInfoKey }) as unknown as ChainInfo,
     [chainInfoKey],
   );
@@ -54,10 +66,19 @@ export default ({ callback }: Props) => {
   };
 
   const handleFinishCreateSPJPToken = async ({ sp_name, _spToken, jp_name, _jpToken }: any) => {
+    setInitialValues((init) => ({ ...init, sp_name, _spToken, jp_name, _jpToken }));
     // 部署合约
     try {
-      const sp_contract = await services.evmServer.deployContract(sp_name, _spToken);
-      const jp_contract = await services.evmServer.deployContract(jp_name, _jpToken);
+      const sp_contract = await services.evmServer.deployContract(
+        sp_name,
+        _spToken,
+        MULTISIGNATURE_ADDRESS,
+      );
+      const jp_contract = await services.evmServer.deployContract(
+        jp_name,
+        _jpToken,
+        MULTISIGNATURE_ADDRESS,
+      );
 
       formStep2.setFieldsValue({
         sp_address: get(sp_contract, '_address'),
@@ -84,15 +105,17 @@ export default ({ callback }: Props) => {
 
       return true;
     } catch (err: unknown) {
-      console.error('deployContract', err);
+      console.log('deployContract', err);
       return false;
     }
   };
 
-  const handleFinishBindMultiSignature = async () => {
+  const handleFinishBindMultiSignature = async ({ sp_address, jp_address }: any) => {
     // 绑定多签合约
     try {
-      await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, PLEDGE_ADDRESS);
+      await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, sp_address);
+      await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, jp_address);
+      setInitialValues((init) => ({ ...init, sp_address, jp_address }));
       return true;
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -102,17 +125,31 @@ export default ({ callback }: Props) => {
 
   const handleClickAuthorized = async () => {
     // 多签授权
+    const { sp_address, jp_address } = initialValues;
+    setAuthorizedloading(true);
     try {
-      const hash = await services.evmServer.getApplicationHash(
-        MULTISIGNATURE_ADDRESS,
-        PLEDGE_ADDRESS,
+      const spHash = await services.evmServer.getApplicationHash(
+        DEPLOYMENT_ACCOUNT,
+        sp_address!,
         MULTISIGNATURE_ADDRESS,
       );
-      await services.evmServer.signApplication(hash, MULTISIGNATURE_ADDRESS);
-      return true;
+      await services.evmServer.signApplication(spHash, MULTISIGNATURE_ADDRESS);
+      const jpHash = await services.evmServer.getApplicationHash(
+        DEPLOYMENT_ACCOUNT,
+        jp_address!,
+        MULTISIGNATURE_ADDRESS,
+      );
+      await services.evmServer.signApplication(jpHash, MULTISIGNATURE_ADDRESS);
+      setInitialValues((init) => ({
+        ...init,
+        spHash,
+        jpHash,
+        multi_sign_account: [...(init?.multi_sign_account || []), account],
+      }));
+      setAuthorizedloading(false);
     } catch (err: unknown) {
       console.error('deployContract', err);
-      return false;
+      setAuthorizedloading(false);
     }
   };
 
@@ -206,13 +243,10 @@ export default ({ callback }: Props) => {
   const verifyAuthorizedStatus = async () => {
     // 验证多签状态
     try {
-      const hash = await services.evmServer.getApplicationHash(
-        MULTISIGNATURE_ADDRESS,
-        PLEDGE_ADDRESS,
-        MULTISIGNATURE_ADDRESS,
-      );
-      const result = await services.evmServer.getValidSignature(hash, MULTISIGNATURE_ADDRESS);
-      setAuthorizedStatus(result === '1');
+      const { jpHash, spHash } = initialValues;
+      const jpResult = await services.evmServer.getValidSignature(jpHash!, MULTISIGNATURE_ADDRESS);
+      const sPresult = await services.evmServer.getValidSignature(spHash!, MULTISIGNATURE_ADDRESS);
+      setAuthorizedStatus(jpResult === '1' && sPresult === '1');
     } catch (err: unknown) {
       console.error('verifyAuthorizedStatus', err);
     }
@@ -230,7 +264,7 @@ export default ({ callback }: Props) => {
       verifyAuthorizedStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current]);
+  }, [current, account]);
 
   return (
     <>
@@ -313,7 +347,6 @@ export default ({ callback }: Props) => {
         </StepsForm.StepForm>
         <StepsForm.StepForm
           title={'Authorized multi-signature accounts'}
-          onFinish={handleFinishBindMultiSignature}
           form={formStep3}
           stepProps={{ disabled: true }}
         >
@@ -324,7 +357,7 @@ export default ({ callback }: Props) => {
           />
           <ProFormText name="sp_address" label={'SP_token contract address'} disabled />
           <ProFormText name="jp_address" label={'JP_token contract address'} disabled />
-          <Button type="primary" onClick={handleClickAuthorized}>
+          <Button type="primary" onClick={handleClickAuthorized} loading={authorizedloading}>
             Authorized
           </Button>
         </StepsForm.StepForm>

@@ -13,6 +13,7 @@ export type ChainInfo = {
   PLEDGE_ADDRESS: string;
   ORACLE_ADDRESS: string;
   MULTISIGNATURE_ADDRESS: string;
+  DEPLOYMENT_ACCOUNT: string;
 };
 
 const chainInfos = [
@@ -26,6 +27,7 @@ const chainInfos = [
     PLEDGE_ADDRESS: '0x25d9226292c8B5dfdadAcD97B1A54981D680D311',
     ORACLE_ADDRESS: '0x272aCa56637FDaBb2064f19d64BC3dE64A85A1b2',
     MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
+    DEPLOYMENT_ACCOUNT: '0xf06A2fb131CBf7c3b9797Ae851EBC22B3362622B',
     netWorkInfo: {
       chainId: web3.utils.toHex(97),
       chainName: 'Binance Smart Chain Testnet',
@@ -48,6 +50,7 @@ const chainInfos = [
     PLEDGE_ADDRESS: '0x78CE5055149Dc30755612209f9d9A98f36fb022E',
     ORACLE_ADDRESS: '0x6cc2B5D12aD1Cc66149F2fb895ca863e9aEbD31e',
     MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
+    DEPLOYMENT_ACCOUNT: '0xf06A2fb131CBf7c3b9797Ae851EBC22B3362622B',
     netWorkInfo: {
       chainId: web3.utils.toHex(56),
       chainName: 'Smart Chain',
