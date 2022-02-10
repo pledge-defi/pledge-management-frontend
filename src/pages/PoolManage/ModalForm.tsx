@@ -15,7 +15,7 @@ import {
 import { useWeb3React } from '@web3-react/core';
 import type { SelectProps } from 'antd';
 import { Button, Form, message, Modal } from 'antd';
-import { find, get } from 'lodash';
+import { find, get, map } from 'lodash';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -360,6 +360,18 @@ export default ({ callback }: Props) => {
           <Button type="primary" onClick={handleClickAuthorized} loading={authorizedloading}>
             Authorized
           </Button>
+          {initialValues.multi_sign_account && (
+            <div>
+              <h3>Currently verified account</h3>
+              {map(initialValues.multi_sign_account, (act, index) => {
+                return (
+                  <div>
+                    {index + 1}. {act}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </StepsForm.StepForm>
         <StepsForm.StepForm
           title={'SP & JP token Authorization'}
