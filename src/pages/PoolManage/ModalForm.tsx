@@ -13,7 +13,7 @@ import {
   StepsForm,
 } from '@ant-design/pro-form';
 import { useWeb3React } from '@web3-react/core';
-import type { SelectProps } from 'antd';
+import { Input, SelectProps } from 'antd';
 import { Button, Form, message, Modal } from 'antd';
 import { find, get, map } from 'lodash';
 import moment from 'moment';
@@ -89,7 +89,6 @@ export default ({ callback }: Props) => {
       formStep3.setFieldsValue({
         sp_address: get(sp_contract, '_address'),
         jp_address: get(jp_contract, '_address'),
-        multi_signature_account: account,
       });
 
       formStep4.setFieldsValue({
@@ -350,11 +349,9 @@ export default ({ callback }: Props) => {
           form={formStep3}
           stepProps={{ disabled: true }}
         >
-          <ProFormText
-            name="multi_signature_account"
-            label={'Currently Multi-signature account'}
-            disabled
-          />
+          <div>Currently Multi-signature account</div>
+          <Input disabled value={account as string} />
+
           <ProFormText name="sp_address" label={'SP_token contract address'} disabled />
           <ProFormText name="jp_address" label={'JP_token contract address'} disabled />
           <Button type="primary" onClick={handleClickAuthorized} loading={authorizedloading}>
