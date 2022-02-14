@@ -117,7 +117,75 @@
         }
       }
     },
-    "/pool/search": {
+    "/pool/setMultiSign": {
+      "post": {
+        "tags": ["pool"],
+        "summary": "Set pool multi-sign",
+        "description": "",
+        "operationId": "",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/SetMultiSignRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SetMultiSignResponse"
+            }
+          },
+          "400": {
+            "description": "Pool not found",
+            "schema": {
+              "$ref": "#/definitions/SearchError"
+            }
+          }
+        }
+      }
+    },
+    "/pool/getMultiSign": {
+      "post": {
+        "tags": ["pool"],
+        "summary": "Set pool multi-sign",
+        "description": "",
+        "operationId": "",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/GetMultiSignRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetMultiSignResponse"
+            }
+          },
+          "400": {
+            "description": "Pool not found",
+            "schema": {
+              "$ref": "#/definitions/SearchError"
+            }
+          }
+        }
+      }
+    },
+    "/pool/search:": {
       "post": {
         "tags": ["pool"],
         "summary": "Get pool by conditions",
@@ -234,6 +302,75 @@
         }
       }
     },
+    "SetMultiSignRequest": {
+      "type": "object",
+      "properties": {
+        "chain_id": {
+          "type": "string"
+        },
+        "p_name": {
+          "type": "string"
+        },
+        "_spToken": {
+          "type": "string"
+        },
+        "jp_name": {
+          "type": "string"
+        },
+        "_jpToken": {
+          "type": "string"
+        },
+        "sp_address": {
+          "type": "string"
+        },
+        "jp_address": {
+          "type": "string"
+        },
+        "spHash": {
+          "type": "string"
+        },
+        "jpHash": {
+          "type": "string"
+        },
+        "multi_sign_account": {
+          "type": "array",
+          "items": {}
+        }
+      }
+    },
+    "SetMultiSignResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "GetMultiSignRequest": {
+      "type": "object",
+      "properties": {
+        "chain_id": {
+          "type": "string"
+        }
+      }
+    },
+    "GetMultiSignResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/definitions/GetMultiSignData"
+        }
+      }
+    },
     "LogoutResponse": {
       "type": "object",
       "properties": {
@@ -256,6 +393,42 @@
         },
         "data": {
           "$ref": "#/definitions/DebtTokenData"
+        }
+      }
+    },
+    "GetMultiSignData": {
+      "type": "object",
+      "properties": {
+        "chain_id": {
+          "type": "string"
+        },
+        "p_name": {
+          "type": "string"
+        },
+        "_spToken": {
+          "type": "string"
+        },
+        "jp_name": {
+          "type": "string"
+        },
+        "_jpToken": {
+          "type": "string"
+        },
+        "sp_address": {
+          "type": "string"
+        },
+        "jp_address": {
+          "type": "string"
+        },
+        "spHash": {
+          "type": "string"
+        },
+        "jpHash": {
+          "type": "string"
+        },
+        "multi_sign_account": {
+          "type": "array",
+          "items": {}
         }
       }
     },

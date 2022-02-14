@@ -2,6 +2,7 @@ import type { ChainInfo } from '@/constants/chainInfos';
 import chainInfos from '@/constants/chainInfos';
 import { chainInfoKeyState } from '@/model/global';
 import services from '@/services';
+import { postPoolGetMultiSign, postPoolSetMultiSign } from '@/services/pledge/api/pool';
 import { BNB_ADDRESS } from '@/utils/constants';
 import { dealNumber } from '@/utils/public';
 import { PlusOutlined } from '@ant-design/icons';
@@ -13,12 +14,13 @@ import {
   StepsForm,
 } from '@ant-design/pro-form';
 import { useWeb3React } from '@web3-react/core';
-import { Input, SelectProps } from 'antd';
-import { Button, Form, message, Modal } from 'antd';
-import { find, get, map } from 'lodash';
+import type { SelectProps } from 'antd';
+import { Button, Form, Input, message, Modal } from 'antd';
+import { find, get, map, size } from 'lodash';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import { useHistory, useLocation } from 'umi';
 
 const validator = async (_: any, value: string) => {
   if (value && value.length > 11) {
@@ -32,6 +34,8 @@ type Props = {
 };
 
 export default ({ callback }: Props) => {
+  const { pathname } = useLocation();
+  const history = useHistory();
   const chainInfoKey = useRecoilValue(chainInfoKeyState);
   const [visible, setVisible] = useState<boolean>(false);
   const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
@@ -40,26 +44,23 @@ export default ({ callback }: Props) => {
   const [current, setCurrent] = useState<number>();
   const [authorizedStatus, setAuthorizedStatus] = useState<boolean>(false);
   const [authorizedloading, setAuthorizedloading] = useState<boolean>(false);
-  const [initialValues, setInitialValues] = useState<{
-    sp_name?: string;
-    _spToken?: string;
-    jp_name?: string;
-    _jpToken?: string;
-    sp_address?: string;
-    jp_address?: string;
-    spHash?: string;
-    jpHash?: string;
-    multi_sign_account?: (string | null | undefined)[];
-  }>({});
+  const [initialValues, setInitialValues] = useState<API.GetMultiSignData>({});
   const { account } = useWeb3React();
   const [formStep2] = Form.useForm();
   const [formStep3] = Form.useForm();
   const [formStep4] = Form.useForm();
   const [formStep5] = Form.useForm();
-  const { PLEDGE_ADDRESS, ORACLE_ADDRESS, MULTISIGNATURE_ADDRESS, DEPLOYMENT_ACCOUNT } = useMemo(
-    () => find(chainInfos, { chainName: chainInfoKey }) as unknown as ChainInfo,
-    [chainInfoKey],
-  );
+  const { PLEDGE_ADDRESS, ORACLE_ADDRESS, MULTISIGNATURE_ADDRESS, DEPLOYMENT_ACCOUNT, chainId } =
+    useMemo(
+      () => find(chainInfos, { chainName: chainInfoKey }) as unknown as ChainInfo,
+      [chainInfoKey],
+    );
+
+  const fetchInitialValues = async () => {
+    const res = await postPoolGetMultiSign({ chain_id: chainId });
+    const v = get(res, ['data']);
+    setInitialValues(v || {});
+  };
 
   const handleCurrentChange = (v: number) => {
     setCurrent(v);
@@ -115,6 +116,7 @@ export default ({ callback }: Props) => {
       await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, sp_address);
       await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, jp_address);
       setInitialValues((init) => ({ ...init, sp_address, jp_address }));
+      history.replace('/poolManage/authorizedMultiSignature');
       return true;
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -264,6 +266,19 @@ export default ({ callback }: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, account]);
+
+  useEffect(() => {
+    if (size(initialValues)) {
+      postPoolSetMultiSign({ ...initialValues, chain_id: chainId });
+    }
+  }, [chainId, initialValues]);
+
+  useEffect(() => {
+    if (pathname === '/poolManage/authorizedMultiSignature') {
+      fetchInitialValues();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>

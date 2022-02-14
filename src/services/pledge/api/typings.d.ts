@@ -23,6 +23,34 @@ declare namespace API {
     token_id?: string;
   };
 
+  type SetMultiSignRequest = {
+    chain_id?: number;
+    p_name?: string;
+    _spToken?: string;
+    jp_name?: string;
+    _jpToken?: string;
+    sp_address?: string;
+    jp_address?: string;
+    spHash?: string;
+    jpHash?: string;
+    multi_sign_account?: any[];
+  };
+
+  type SetMultiSignResponse = {
+    code?: number;
+    message?: string;
+  };
+
+  type GetMultiSignRequest = {
+    chain_id?: number;
+  };
+
+  type GetMultiSignResponse = {
+    code?: number;
+    message?: string;
+    data?: GetMultiSignData;
+  };
+
   type LogoutResponse = {
     code?: number;
     message?: string;
@@ -32,6 +60,19 @@ declare namespace API {
     code?: number;
     message?: string;
     data?: DebtTokenData;
+  };
+
+  type GetMultiSignData = {
+    chain_id?: string;
+    p_name?: string;
+    _spToken?: string;
+    jp_name?: string;
+    _jpToken?: string;
+    sp_address?: string;
+    jp_address?: string;
+    spHash?: string;
+    jpHash?: string;
+    multi_sign_account?: any[];
   };
 
   type DebtTokenData = {
@@ -50,7 +91,7 @@ declare namespace API {
   };
 
   type SearchRequest = {
-    chainID?: number;
+    chainID?: string;
     poolID?: number;
     state?: string;
     page?: number;
@@ -58,7 +99,7 @@ declare namespace API {
   };
 
   type PoolListRequest = {
-    chainID?: number;
+    chainID?: string;
   };
 
   type SearchResponse = {

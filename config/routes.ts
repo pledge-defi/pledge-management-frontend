@@ -25,6 +25,10 @@
     component: './PoolManage',
   },
   {
+    path: '/poolManage/authorizedMultiSignature',
+    component: './PoolManage',
+  },
+  {
     path: '/',
     redirect: '/poolManage',
   },

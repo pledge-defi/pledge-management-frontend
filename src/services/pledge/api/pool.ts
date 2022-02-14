@@ -10,12 +10,42 @@ export async function debtTokenList(options?: { [key: string]: any }) {
   });
 }
 
-/** Get pool by conditions POST /pool/search */
+/** Set pool multi-sign POST /pool/setMultiSign */
+export async function postPoolSetMultiSign(
+  body: API.SetMultiSignRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.SetMultiSignResponse>('/pool/setMultiSign', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** Set pool multi-sign POST /pool/getMultiSign */
+export async function postPoolGetMultiSign(
+  body: API.GetMultiSignRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.GetMultiSignResponse>('/pool/getMultiSign', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** Get pool by conditions POST /pool/search${undefined} */
 export async function getPoolByConditions(
   body: API.SearchRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.SearchResponse>('/pool/search', {
+  return request<API.SearchResponse>(`/pool/search${undefined}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
