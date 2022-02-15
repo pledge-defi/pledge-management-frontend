@@ -45,7 +45,7 @@ export async function getPoolByConditions(
   body: API.SearchRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.SearchResponse>(`/pool/search${undefined}`, {
+  return request<API.SearchResponse>(`/pool/search`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -25,7 +25,7 @@ declare namespace API {
 
   type SetMultiSignRequest = {
     chain_id?: number;
-    p_name?: string;
+    sp_name?: string;
     _spToken?: string;
     jp_name?: string;
     _jpToken?: string;
@@ -64,7 +64,7 @@ declare namespace API {
 
   type GetMultiSignData = {
     chain_id?: string;
-    p_name?: string;
+    sp_name?: string;
     _spToken?: string;
     jp_name?: string;
     _jpToken?: string;

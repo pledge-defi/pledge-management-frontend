@@ -56,10 +56,37 @@ export default ({ callback }: Props) => {
       [chainInfoKey],
     );
 
+  const setFormValues = ({ sp_address, jp_address, _spToken, _jpToken }: API.GetMultiSignData) => {
+    formStep2.setFieldsValue({
+      sp_address,
+      jp_address,
+      multisignature_address: MULTISIGNATURE_ADDRESS,
+    });
+
+    formStep3.setFieldsValue({
+      sp_address,
+      jp_address,
+    });
+
+    formStep4.setFieldsValue({
+      sp_address,
+      jp_address,
+      pledge_address: PLEDGE_ADDRESS,
+    });
+
+    formStep5.setFieldsValue({
+      _spToken,
+      _jpToken,
+    });
+  };
+
   const fetchInitialValues = async () => {
     const res = await postPoolGetMultiSign({ chain_id: chainId });
     const v = get(res, ['data']);
     setInitialValues(v || {});
+    if (size(v)) {
+      setFormValues(v!);
+    }
   };
 
   const handleCurrentChange = (v: number) => {
@@ -80,28 +107,10 @@ export default ({ callback }: Props) => {
         _jpToken,
         MULTISIGNATURE_ADDRESS,
       );
+      const sp_address = get(sp_contract, '_address');
+      const jp_address = get(jp_contract, '_address');
 
-      formStep2.setFieldsValue({
-        sp_address: get(sp_contract, '_address'),
-        jp_address: get(jp_contract, '_address'),
-        multisignature_address: MULTISIGNATURE_ADDRESS,
-      });
-
-      formStep3.setFieldsValue({
-        sp_address: get(sp_contract, '_address'),
-        jp_address: get(jp_contract, '_address'),
-      });
-
-      formStep4.setFieldsValue({
-        sp_address: get(sp_contract, '_address'),
-        jp_address: get(jp_contract, '_address'),
-        pledge_address: PLEDGE_ADDRESS,
-      });
-
-      formStep5.setFieldsValue({
-        _spToken,
-        _jpToken,
-      });
+      setFormValues({ sp_address, jp_address, _spToken, _jpToken });
 
       return true;
     } catch (err: unknown) {
@@ -159,6 +168,7 @@ export default ({ callback }: Props) => {
     try {
       await services.evmServer.addMinter(sp_address, PLEDGE_ADDRESS);
       await services.evmServer.addMinter(jp_address, PLEDGE_ADDRESS);
+      history.replace('/poolManage');
       return true;
     } catch (err: unknown) {
       console.error('addMinter', err);
@@ -276,6 +286,8 @@ export default ({ callback }: Props) => {
   useEffect(() => {
     if (pathname === '/poolManage/authorizedMultiSignature') {
       fetchInitialValues();
+      setVisible(true);
+      setCurrent(2);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
