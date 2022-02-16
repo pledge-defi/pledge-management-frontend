@@ -22,6 +22,7 @@ export default () => {
     () => find(chainInfos, { chainName: chainInfoKey })?.chainId,
     [chainInfoKey],
   );
+  console.log(1121212);
 
   const fetchPoolList = async () => {
     const response = await debtTokenList();

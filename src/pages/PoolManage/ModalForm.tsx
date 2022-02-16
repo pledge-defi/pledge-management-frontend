@@ -125,6 +125,7 @@ export default ({ callback }: Props) => {
       await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, jp_address);
       setInitialValues((init) => ({ ...init, sp_address, jp_address }));
       postPoolSetMultiSign({ ...initialValues, sp_address, jp_address, chain_id: chainId });
+      window.history.replaceState(null, '', '/poolManage/authorizedMultiSignature');
       return true;
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -175,6 +176,7 @@ export default ({ callback }: Props) => {
     try {
       await services.evmServer.addMinter(sp_address, PLEDGE_ADDRESS);
       await services.evmServer.addMinter(jp_address, PLEDGE_ADDRESS);
+      window.history.replaceState(null, '', '/poolManage');
       return true;
     } catch (err: unknown) {
       console.error('addMinter', err);
@@ -258,8 +260,6 @@ export default ({ callback }: Props) => {
   };
 
   const verifyAuthorizedStatus = async () => {
-    console.log(1);
-
     // 验证多签状态
     try {
       const { jpHash, spHash } = initialValues;
