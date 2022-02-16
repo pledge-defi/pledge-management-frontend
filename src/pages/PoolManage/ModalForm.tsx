@@ -20,7 +20,7 @@ import { find, get, map, size } from 'lodash';
 import moment from 'moment';
 import { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { useHistory, useLocation } from 'umi';
+import { useLocation } from 'umi';
 
 const validator = async (_: any, value: string) => {
   if (value && value.length > 11) {
@@ -35,7 +35,6 @@ type Props = {
 
 export default ({ callback }: Props) => {
   const { pathname } = useLocation();
-  const history = useHistory();
   const chainInfoKey = useRecoilValue(chainInfoKeyState);
   const [visible, setVisible] = useState<boolean>(false);
   const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
@@ -94,7 +93,6 @@ export default ({ callback }: Props) => {
   };
 
   const handleFinishCreateSPJPToken = async ({ sp_name, _spToken, jp_name, _jpToken }: any) => {
-    setInitialValues((init) => ({ ...init, sp_name, _spToken, jp_name, _jpToken }));
     // 部署合约
     try {
       const sp_contract = await services.evmServer.deployContract(
@@ -111,7 +109,8 @@ export default ({ callback }: Props) => {
       const jp_address = get(jp_contract, '_address');
 
       setFormValues({ sp_address, jp_address, _spToken, _jpToken });
-
+      setInitialValues((init) => ({ ...init, sp_name, _spToken, jp_name, _jpToken }));
+      postPoolSetMultiSign({ sp_name, _spToken, jp_name, _jpToken, chain_id: chainId });
       return true;
     } catch (err: unknown) {
       console.log('deployContract', err);
@@ -125,7 +124,7 @@ export default ({ callback }: Props) => {
       await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, sp_address);
       await services.evmServer.createApplication(MULTISIGNATURE_ADDRESS, jp_address);
       setInitialValues((init) => ({ ...init, sp_address, jp_address }));
-      history.replace('/poolManage/authorizedMultiSignature');
+      postPoolSetMultiSign({ ...initialValues, sp_address, jp_address, chain_id: chainId });
       return true;
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -156,6 +155,14 @@ export default ({ callback }: Props) => {
         jpHash,
         multi_sign_account: [...(init?.multi_sign_account || []), account],
       }));
+      postPoolSetMultiSign({
+        ...initialValues,
+        spHash,
+        jpHash,
+        multi_sign_account: [...(initialValues?.multi_sign_account || []), account],
+        chain_id: chainId,
+      });
+
       setAuthorizedloading(false);
     } catch (err: unknown) {
       console.error('deployContract', err);
@@ -168,7 +175,6 @@ export default ({ callback }: Props) => {
     try {
       await services.evmServer.addMinter(sp_address, PLEDGE_ADDRESS);
       await services.evmServer.addMinter(jp_address, PLEDGE_ADDRESS);
-      history.replace('/poolManage');
       return true;
     } catch (err: unknown) {
       console.error('addMinter', err);
@@ -252,11 +258,15 @@ export default ({ callback }: Props) => {
   };
 
   const verifyAuthorizedStatus = async () => {
+    console.log(1);
+
     // 验证多签状态
     try {
       const { jpHash, spHash } = initialValues;
       const jpResult = await services.evmServer.getValidSignature(jpHash!, MULTISIGNATURE_ADDRESS);
       const sPresult = await services.evmServer.getValidSignature(spHash!, MULTISIGNATURE_ADDRESS);
+      console.log(jpResult, sPresult);
+
       setAuthorizedStatus(jpResult === '1' && sPresult === '1');
     } catch (err: unknown) {
       console.error('verifyAuthorizedStatus', err);
@@ -271,17 +281,11 @@ export default ({ callback }: Props) => {
   }, [authorizedStatus, current]);
 
   useEffect(() => {
-    if (current === 2) {
+    if (current === 2 && size(initialValues) !== 0) {
       verifyAuthorizedStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, account]);
-
-  useEffect(() => {
-    if (size(initialValues)) {
-      postPoolSetMultiSign({ ...initialValues, chain_id: chainId });
-    }
-  }, [chainId, initialValues]);
+  }, [current, initialValues]);
 
   useEffect(() => {
     if (pathname === '/poolManage/authorizedMultiSignature') {
