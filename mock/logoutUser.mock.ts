@@ -3,6 +3,6 @@ import { Request, Response } from 'express';
 
 export default {
   'POST /user/logout': (req: Request, res: Response) => {
-    res.status(200).send({ code: 96, message: '条标计意她与所置图世及取整量则写。' });
+    res.status(200).send({ code: 90, message: '年年以形各住打积马切着斗存需。' });
   },
 };

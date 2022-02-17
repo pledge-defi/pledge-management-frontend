@@ -1,41 +1,38 @@
 import chainInfos from '@/constants/chainInfos';
-import { chainInfoKeyState, globalTokenState } from '@/model/global';
-import services from '@/services';
-import { debtTokenList, getPoolByConditions, PoolList } from '@/services/pledge/api/pool';
+import { chainInfoKeyState } from '@/model/global';
+import { debtTokenList, postPoolPoolList, postPoolSearch } from '@/services/pledge/api/pool';
 import { FORMAT_TIME } from '@/utils/constants';
 import { dealNumber_18, dealNumber_8 } from '@/utils/public';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { filter, find, forEach, get, set, size, some } from 'lodash';
+import { find, forEach, get, set } from 'lodash';
 import moment from 'moment';
 import numeral from 'numeral';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import ModalForm from './ModalForm';
 
 export default () => {
   const actionRef = useRef<ActionType>();
   const [poolValueEnum, setPoolValueEnum] = useState<Record<string, any>>();
-  const [globalToken, setGlobalToken] = useRecoilState(globalTokenState);
   const chainInfoKey = useRecoilValue(chainInfoKeyState);
   const chainID = useMemo(
     () => find(chainInfos, { chainName: chainInfoKey })?.chainId,
     [chainInfoKey],
   );
-  console.log(1121212);
 
   const fetchPoolList = async () => {
-    const response = await debtTokenList();
-    const rows = get(response, ['data', 'rows']);
+    const response = await debtTokenList({ chain_id: chainID! });
+    const rows = get(response, ['data']);
     const newPoolValueEnum = {};
     forEach(rows, (s) => {
-      set(newPoolValueEnum, s.address!, { text: s.symbol });
+      set(newPoolValueEnum, s.symbol!, { text: s.symbol });
     });
     setPoolValueEnum(newPoolValueEnum);
   };
 
   const handleClickSearch = async () => {
-    await PoolList({ chainID });
+    await postPoolPoolList({ chainID });
     actionRef.current?.reload();
   };
 
@@ -49,14 +46,12 @@ export default () => {
       {
         title: 'pool',
         dataIndex: 'lendToken',
-        renderText: (t: string) => find(globalToken, { value: t })?.label,
         valueType: 'select',
         valueEnum: poolValueEnum,
       },
       {
         title: 'Underlying Asset',
         dataIndex: 'borrowToken',
-        renderText: (t: string) => find(globalToken, { value: t })?.label,
         search: false,
       },
       {
@@ -124,36 +119,7 @@ export default () => {
         search: false,
       },
     ];
-  }, [globalToken, poolValueEnum]);
-
-  const getTokens = (data: API.PoolInfo[] | undefined) => {
-    if (!size(data)) return;
-    const tokens: (string | undefined)[] = [];
-    forEach(data, (d) => {
-      tokens.push(d.lendToken);
-      tokens.push(d.borrowToken);
-    });
-    const uniqueTokens = Array.from(new Set(tokens));
-    const needAdduniqueTokens = filter(
-      uniqueTokens,
-      (u) => !some(globalToken, (g) => g.value === u),
-    );
-    const promiseAll: any[] = [];
-    forEach(needAdduniqueTokens, (u) => {
-      promiseAll.push(services.evmServer.getSymbol(u!));
-    });
-    Promise.all(promiseAll)
-      .then((res) => {
-        const tokenOptions: Global.Option[] = [];
-        forEach(needAdduniqueTokens, (u, index) => {
-          tokenOptions.push({ label: get(res, [index]), value: u });
-        });
-        setGlobalToken([...globalToken, ...tokenOptions]);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
+  }, [poolValueEnum]);
 
   useEffect(() => {
     actionRef.current?.reload();
@@ -161,6 +127,7 @@ export default () => {
 
   useEffect(() => {
     fetchPoolList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -171,14 +138,13 @@ export default () => {
       request={async (params = {}) => {
         const p: API.SearchRequest = {
           chainID,
-          poolID: get(params, 'lendToken'),
+          lend_token_symbol: get(params, 'lendToken'),
           state: get(params, 'state'),
           page: get(params, 'current'),
           pageSize: get(params, 'pageSize'),
         };
-        return getPoolByConditions(p).then((response) => {
+        return postPoolSearch(p).then((response) => {
           const data = get(response, 'data');
-          getTokens(data?.rows);
           return {
             data: data?.rows,
             success: true,

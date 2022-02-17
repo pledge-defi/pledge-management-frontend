@@ -265,8 +265,6 @@ export default ({ callback }: Props) => {
       const { jpHash, spHash } = initialValues;
       const jpResult = await services.evmServer.getValidSignature(jpHash!, MULTISIGNATURE_ADDRESS);
       const sPresult = await services.evmServer.getValidSignature(spHash!, MULTISIGNATURE_ADDRESS);
-      console.log(jpResult, sPresult);
-
       setAuthorizedStatus(jpResult === '1' && sPresult === '1');
     } catch (err: unknown) {
       console.error('verifyAuthorizedStatus', err);
@@ -288,7 +286,10 @@ export default ({ callback }: Props) => {
   }, [current, initialValues]);
 
   useEffect(() => {
-    if (pathname === '/poolManage/authorizedMultiSignature') {
+    if (
+      pathname === '/poolManage/authorizedMultiSignature' ||
+      pathname === '/poolManage/authorizedMultiSignature/'
+    ) {
       fetchInitialValues();
       setVisible(true);
       setCurrent(2);

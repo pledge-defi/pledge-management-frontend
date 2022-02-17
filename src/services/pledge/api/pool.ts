@@ -3,9 +3,16 @@
 import request from '@/utils/request';
 
 /** 此处后端没有提供注释 POST /pool/debtTokenList */
-export async function debtTokenList(options?: { [key: string]: any }) {
-  return request<API.DebtTokenList>('/pool/debtTokenList', {
+export async function debtTokenList(
+  body: API.DebtTokenListRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.DebtTokenListResponse>('/pool/debtTokenList', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }
@@ -40,12 +47,9 @@ export async function postPoolGetMultiSign(
   });
 }
 
-/** Get pool by conditions POST /pool/search${undefined} */
-export async function getPoolByConditions(
-  body: API.SearchRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.SearchResponse>(`/pool/search`, {
+/** Get pool by conditions POST /pool/search */
+export async function postPoolSearch(body: API.SearchRequest, options?: { [key: string]: any }) {
+  return request<API.SearchResponse>('/pool/search', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,8 +60,11 @@ export async function getPoolByConditions(
 }
 
 /** Notice Server to get pool list POST /pool/poolList */
-export async function PoolList(body: API.PoolListRequest, options?: { [key: string]: any }) {
-  return request<any>('/pool/poolList', {
+export async function postPoolPoolList(
+  body: API.PoolListRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.SearchResponse>('/pool/poolList', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

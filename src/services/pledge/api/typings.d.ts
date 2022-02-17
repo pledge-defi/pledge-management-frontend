@@ -1,7 +1,24 @@
 declare namespace API {
   type LoginRequest = {
-    name: string;
-    password: string;
+    chain_id: string;
+  };
+
+  type DebtTokenListRequest = {
+    chain_id: number;
+  };
+
+  type DebtTokenListResponse = {
+    code?: number;
+    message?: string;
+    data?: DebtTokenListResData[];
+  };
+
+  type DebtTokenListData = DebtTokenListResData;
+
+  type DebtTokenListResData = {
+    symbol?: string;
+    token?: string;
+    chain_id?: number;
   };
 
   type LoginResponse = {
@@ -24,7 +41,7 @@ declare namespace API {
   };
 
   type SetMultiSignRequest = {
-    chain_id?: number;
+    chain_id?: string;
     sp_name?: string;
     _spToken?: string;
     jp_name?: string;
@@ -42,7 +59,7 @@ declare namespace API {
   };
 
   type GetMultiSignRequest = {
-    chain_id?: number;
+    chain_id?: string;
   };
 
   type GetMultiSignResponse = {
@@ -54,12 +71,6 @@ declare namespace API {
   type LogoutResponse = {
     code?: number;
     message?: string;
-  };
-
-  type DebtTokenList = {
-    code?: number;
-    message?: string;
-    data?: DebtTokenData;
   };
 
   type GetMultiSignData = {
@@ -75,24 +86,14 @@ declare namespace API {
     multi_sign_account?: any[];
   };
 
-  type DebtTokenData = {
-    count?: number;
-    rows?: Symbol[];
-  };
-
   type DebtTokenError = {
     code?: number;
     message?: string;
   };
 
-  type Symbol = {
-    symbol?: string;
-    address?: string;
-  };
-
   type SearchRequest = {
     chainID?: string;
-    poolID?: number;
+    lend_token_symbol?: string;
     state?: string;
     page?: number;
     pageSize?: number;
@@ -128,6 +129,8 @@ declare namespace API {
     martgageRate?: string;
     lendToken?: string;
     borrowToken?: string;
+    lend_token_symbol?: string;
+    borrow_token_symbol?: string;
     state?: string;
     spCoin?: string;
     jpCoin?: string;
