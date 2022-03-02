@@ -48,14 +48,14 @@ export default () => {
       {
         title: 'pool',
         dataIndex: 'lendToken',
-        renderText: (t: string) => find(globalToken, { value: t })?.label,
-        valueType: 'select',
-        valueEnum: poolValueEnum,
+        // renderText: (t: string) => find(globalToken, { value: t })?.label,
+        // valueType: 'select',
+        // valueEnum: poolValueEnum,
       },
       {
         title: 'Underlying Asset',
         dataIndex: 'borrowToken',
-        renderText: (t: string) => find(globalToken, { value: t })?.label,
+        // renderText: (t: string) => find(globalToken, { value: t })?.label,
         search: false,
       },
       {
