@@ -76,7 +76,8 @@ const errorHandler = (error: ResponseError | { response: Response }) => {
 const request = extend({
   errorHandler, // 默认错误处理
   // credentials: 'include', // 默认请求是否带上cookie
-  prefix: 'http://54.67.12.175:7002/api/v2',
+  // prefix: 'http://54.67.12.175:7002/api/v2',
+  prefix: 'https://dev-v2-backend.pledger.finance/api/v21',
   // prefix: '/api/v2',
 });
 
