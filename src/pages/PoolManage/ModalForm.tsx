@@ -40,7 +40,7 @@ export default ({ callback }: Props) => {
   const [lendTokenOption, setLendTokenOption] = useState<SelectProps<any>['options']>();
   const [borrowTokenOption, setBorrowTokenOption] = useState<SelectProps<any>['options']>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [current, setCurrent] = useState<number>();
+  const [current, setCurrent] = useState<number>(4);
   const [authorizedStatus, setAuthorizedStatus] = useState<boolean>(false);
   const [authorizedloading, setAuthorizedloading] = useState<boolean>(false);
   const [initialValues, setInitialValues] = useState<API.GetMultiSignData>({});
@@ -242,7 +242,7 @@ export default ({ callback }: Props) => {
         }
       } catch (error) {
         setLoading(false);
-        // console.log(error);
+        console.log(error);
         return undefined;
       }
     }
