@@ -1,7 +1,12 @@
 import { web3 } from '@/services/web3';
 import { map } from 'lodash';
 import type { AddEthereumChainParameter } from './ChainBridge.d';
-
+import {
+  ORACLE_ADDRESS,
+  PLEDGE_ADDRESS,
+  DEV_ORACLE_ADDRESS,
+  DEV_PLEDGE_ADDRESS,
+} from '@/utils/constants';
 export type ChainInfo = {
   chainId: number;
   chainName: string;
@@ -24,8 +29,8 @@ const chainInfos = [
     currencyImageAsset: require('@/assets/images/PLGR.svg'),
     chainId: 97,
     symbol: 'tBNB',
-    PLEDGE_ADDRESS: '0x216f718A983FCCb462b338FA9c60f2A89199490c',
-    ORACLE_ADDRESS: '0x272aCa56637FDaBb2064f19d64BC3dE64A85A1b2',
+    PLEDGE_ADDRESS: DEV_PLEDGE_ADDRESS,
+    ORACLE_ADDRESS: DEV_ORACLE_ADDRESS,
     MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
     DEPLOYMENT_ACCOUNT: '0xf06A2fb131CBf7c3b9797Ae851EBC22B3362622B',
     netWorkInfo: {
@@ -47,8 +52,8 @@ const chainInfos = [
     chainDesc: 'BSC Network',
     currencyImageAsset: require('@/assets/images/PLGR.svg'),
     symbol: 'BNB',
-    PLEDGE_ADDRESS: '0x78CE5055149Dc30755612209f9d9A98f36fb022E',
-    ORACLE_ADDRESS: '0x6cc2B5D12aD1Cc66149F2fb895ca863e9aEbD31e',
+    PLEDGE_ADDRESS: PLEDGE_ADDRESS,
+    ORACLE_ADDRESS: ORACLE_ADDRESS,
     MULTISIGNATURE_ADDRESS: '0xcdC5A05A0A68401d5FCF7d136960CBa5aEa990Dd',
     DEPLOYMENT_ACCOUNT: '0xf06A2fb131CBf7c3b9797Ae851EBC22B3362622B',
     netWorkInfo: {

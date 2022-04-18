@@ -48,7 +48,7 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
-    <Space className={className}>
+    <Space className={className} style={{ lineHeight: '25px' }}>
       <SwitchNetWork chainInfoKey={chainInfoKey} onClick={handleClick} />
       <ConnectWallet />
       <Avatar />

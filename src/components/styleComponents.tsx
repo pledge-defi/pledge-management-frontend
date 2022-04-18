@@ -135,8 +135,9 @@ export const HeaderBox = styled.div`
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
+  align-items: center;
   min-width: 120px;
-  padding: 10px 20px;
+  padding: 8px 20px;
   color: #5d52ff;
   background: rgba(93, 82, 255, 0.1);
   border: 1px solid #5d52ff;
