@@ -2,7 +2,7 @@ import chainInfos from '@/constants/chainInfos';
 import { chainInfoKeyState, globalTokenState } from '@/model/global';
 import services from '@/services';
 import { debtTokenList, getPoolByConditions, PoolList } from '@/services/pledge/api/pool';
-import { FORMAT_TIME } from '@/utils/constants';
+import { FORMAT_TIME_STANDARD } from '@/utils/constants';
 import { dealNumber_18, dealNumber_8 } from '@/utils/public';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -79,7 +79,7 @@ export default () => {
       {
         title: 'Settlement date',
         dataIndex: 'settleTime',
-        renderText: (t) => moment.unix(t).format(FORMAT_TIME),
+        renderText: (t) => moment.unix(t).format(FORMAT_TIME_STANDARD),
         search: false,
       },
       {
@@ -119,7 +119,7 @@ export default () => {
       {
         title: 'maturity time',
         dataIndex: 'endTime',
-        renderText: (t) => moment.unix(t).format(FORMAT_TIME),
+        renderText: (t) => moment.unix(t).format(FORMAT_TIME_STANDARD),
         search: false,
       },
     ];

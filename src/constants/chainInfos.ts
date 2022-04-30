@@ -1,6 +1,12 @@
 import { web3 } from '@/services/web3';
 import { map } from 'lodash';
 import type { AddEthereumChainParameter } from './ChainBridge.d';
+import {
+  ORACLE_ADDRESS,
+  PLEDGE_ADDRESS,
+  DEV_ORACLE_ADDRESS,
+  DEV_PLEDGE_ADDRESS,
+} from '@/utils/constants';
 
 export type ChainInfo = {
   chainId: number;
@@ -22,8 +28,8 @@ const chainInfos = [
     currencyImageAsset: require('@/assets/images/PLGR.svg'),
     chainId: 97,
     symbol: 'tBNB',
-    PLEDGE_ADDRESS: '0xb996788A2471f34ad301dD5090d85521Da252ED4',
-    ORACLE_ADDRESS: '0xd96DBDC193617A0cD4bbf38E78a0fB4799A8E554',
+    PLEDGE_ADDRESS: DEV_PLEDGE_ADDRESS,
+    ORACLE_ADDRESS: DEV_ORACLE_ADDRESS,
     netWorkInfo: {
       chainId: web3.utils.toHex(97),
       chainName: 'Binance Smart Chain Testnet',
@@ -43,8 +49,8 @@ const chainInfos = [
     chainDesc: 'BSC Network',
     currencyImageAsset: require('@/assets/images/PLGR.svg'),
     symbol: 'BNB',
-    PLEDGE_ADDRESS: '0x78CE5055149Dc30755612209f9d9A98f36fb022E',
-    ORACLE_ADDRESS: '0x6cc2B5D12aD1Cc66149F2fb895ca863e9aEbD31e',
+    PLEDGE_ADDRESS: PLEDGE_ADDRESS,
+    ORACLE_ADDRESS: ORACLE_ADDRESS,
     netWorkInfo: {
       chainId: web3.utils.toHex(56),
       chainName: 'Smart Chain',
