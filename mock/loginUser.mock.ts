@@ -4,9 +4,9 @@ import { Request, Response } from 'express';
 export default {
   'POST /user/login': (req: Request, res: Response) => {
     res.status(200).send({
-      code: 70,
-      message: '龙入法众又今花例华对圆事物确得利族。',
-      data: { token_id: 'Bd0b6489-0C9F-9E3B-A25d-C24eC0F4943E' },
+      code: 94,
+      message: '还路重系题空是光安界热却按常马。',
+      data: { token_id: '48B901DE-9fb7-fDD1-7670-dAF8ea62Eb5F' },
     });
   },
 };

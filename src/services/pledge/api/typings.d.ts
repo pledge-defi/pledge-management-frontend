@@ -1,4 +1,29 @@
 declare namespace API {
+  type DebtTokenData = {
+    count?: number;
+    rows?: Symbol[];
+  };
+
+  type DebtTokenError = {
+    code?: number;
+    message?: string;
+  };
+
+  type DebtTokenList = {
+    code?: number;
+    message?: string;
+    data?: DebtTokenData;
+  };
+
+  type LoginData = {
+    token_id?: string;
+  };
+
+  type LoginError = {
+    code?: number;
+    message?: string;
+  };
+
   type LoginRequest = {
     name: string;
     password: string;
@@ -10,69 +35,11 @@ declare namespace API {
     data?: LoginData;
   };
 
-  type LoginError = {
-    code?: number;
-    message?: string;
-  };
-
-  type LoginData = {
-    token_id?: string;
-  };
-
   type LogoutRequest = {
     token_id?: string;
   };
 
   type LogoutResponse = {
-    code?: number;
-    message?: string;
-  };
-
-  type DebtTokenList = {
-    code?: number;
-    message?: string;
-    data?: DebtTokenData;
-  };
-
-  type DebtTokenData = {
-    count?: number;
-    rows?: Symbol[];
-  };
-
-  type DebtTokenError = {
-    code?: number;
-    message?: string;
-  };
-
-  type Symbol = {
-    symbol?: string;
-    address?: string;
-  };
-
-  type SearchRequest = {
-    chainID?: number;
-    poolID?: number;
-    state?: string;
-    page?: number;
-    pageSize?: number;
-  };
-
-  type PoolListRequest = {
-    chainID?: number;
-  };
-
-  type SearchResponse = {
-    code?: number;
-    message?: string;
-    data?: SearchData;
-  };
-
-  type SearchData = {
-    count?: number;
-    rows?: PoolInfo[];
-  };
-
-  type SearchError = {
     code?: number;
     message?: string;
   };
@@ -99,5 +66,38 @@ declare namespace API {
       liquidationAmounLend?: string;
       liquidationAmounBorrow?: string;
     };
+  };
+
+  type PoolListRequest = {
+    chainID?: string;
+  };
+
+  type SearchData = {
+    count?: number;
+    rows?: PoolInfo[];
+  };
+
+  type SearchError = {
+    code?: number;
+    message?: string;
+  };
+
+  type SearchRequest = {
+    chainID?: string;
+    poolID?: number;
+    state?: string;
+    page?: number;
+    pageSize?: number;
+  };
+
+  type SearchResponse = {
+    code?: number;
+    message?: string;
+    data?: SearchData;
+  };
+
+  type Symbol = {
+    symbol?: string;
+    address?: string;
   };
 }

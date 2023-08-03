@@ -10,12 +10,9 @@ export async function debtTokenList(options?: { [key: string]: any }) {
   });
 }
 
-/** Get pool by conditions POST /pool/search */
-export async function getPoolByConditions(
-  body: API.SearchRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.SearchResponse>('/pool/search', {
+/** Notice Server to get pool list POST /pool/poolList */
+export async function PoolList(body: API.PoolListRequest, options?: { [key: string]: any }) {
+  return request<any>('/pool/poolList', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -25,9 +22,12 @@ export async function getPoolByConditions(
   });
 }
 
-/** Notice Server to get pool list POST /pool/poolList */
-export async function PoolList(body: API.PoolListRequest, options?: { [key: string]: any }) {
-  return request<any>('/pool/poolList', {
+/** Get pool by conditions POST /pool/search */
+export async function getPoolByConditions(
+  body: API.SearchRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.SearchResponse>('/pool/search', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
